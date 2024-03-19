@@ -247,6 +247,29 @@ document.addEventListener('DOMContentLoaded', function(){
             { data: { id: 'a29', source: '倪哲晟', target: '陈辰', relationship: 'AFFECTION' } },
             { data: { id: 'a30', source: '秦汉文', target: '于小格', relationship: 'AFFECTION' } },
             { data: { id: 'a31', source: '赵虹昇', target: '葛恒嘉', relationship: 'AFFECTION' } },
+            { data: { id: 'a32', source: '王联舟', target: '王圣涵', relationship: 'AFFECTION' } },
+            { data: { id: 'a33', source: '王圣涵', target: '王联舟', relationship: 'AFFECTION' } },
+            { data: { id: 'a34', source: '康家豪', target: '钱若瑜', relationship: 'AFFECTION' } },
+            { data: { id: 'a35', source: '尤镜淞', target: '方彬羽', relationship: 'AFFECTION' } },
+            { data: { id: 'a36', source: '尤镜淞', target: '王煜菲', relationship: 'AFFECTION' } },
+            { data: { id: 'a37', source: '尤镜淞', target: '冯诗悦', relationship: 'AFFECTION' } },
+            { data: { id: 'a38', source: '侯思成', target: '陈辰', relationship: 'AFFECTION' } },
+            { data: { id: 'a39', source: '王联舟', target: '陈洁如', relationship: 'AFFECTION' } },
+            { data: { id: 'a40', source: '侯思成', target: '朱易琳', relationship: 'AFFECTION' } },
+            { data: { id: 'a41', source: '侯思成', target: '冯诗悦', relationship: 'AFFECTION' } },
+            { data: { id: 'a42', source: '张盛洋', target: '马希予', relationship: 'AFFECTION' } },
+            { data: { id: 'a43', source: '武奇', target: '马希予', relationship: 'AFFECTION' } },
+            { data: { id: 'a44', source: '姚博文', target: '方馨', relationship: 'AFFECTION' } },
+            { data: { id: 'a45', source: '肖景元', target: '刘君明', relationship: 'AFFECTION' } },
+            { data: { id: 'a46', source: '吴弘宇', target: '张沁媛', relationship: 'AFFECTION' } },
+            { data: { id: 'a47', source: '郑筑轩', target: '刘燕霖', relationship: 'AFFECTION' } },
+            { data: { id: 'a48', source: '刘燕霖', target: '郑筑轩', relationship: 'AFFECTION' } },
+            { data: { id: 'a49', source: '王思源', target: '方馨', relationship: 'AFFECTION' } },
+            { data: { id: 'a50', source: '陆宜彬', target: '姚昕妤', relationship: 'AFFECTION' } },
+            { data: { id: 'a51', source: '李晗之', target: '王煜菲', relationship: 'AFFECTION' } },
+            { data: { id: 'a52', source: '王辰茵', target: '陈奕添', relationship: 'AFFECTION' } },
+
+
 
 
 
@@ -348,7 +371,76 @@ document.addEventListener('DOMContentLoaded', function(){
             }
         }
     });
+
+    // 查找与特定人物有关的图
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        var keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (keyword) {
+            // 获取与搜索关键词匹配的节点
+            var targetNode = cy.nodes().filter(function(n) {
+                return n.data('id').toLowerCase() === keyword;
+            });
+
+            if (targetNode.length > 0) {
+                // 获取目标节点以及与之直接相连的节点和边
+                var connectedElems = targetNode.connectedEdges().connectedNodes().add(targetNode.connectedEdges()).add(targetNode);
+                // 隐藏所有元素
+                cy.elements().not(connectedElems).style('display', 'none');
+                // 仅展示与目标节点直接相关的元素
+                connectedElems.style('display', 'element');
+            } else {
+                alert('No matching nodes found');
+            }
+        }
+    });
+
+    // 过滤展示特定类型的关系
+    document.getElementById('filterBtn').addEventListener('click', function() {
+        var selectedRelationship = document.getElementById('relationshipFilter').value;
+        if (selectedRelationship) {
+            // 获取所有具有选定关系类型的边
+            var targetEdges = cy.edges().filter(function(e) {
+                return e.data('relationship').toLowerCase() === selectedRelationship;
+            });
+            var connectedNodes = targetEdges.connectedNodes();
+            var elementsToShow = targetEdges.add(connectedNodes);
+            // 隐藏所有元素
+            cy.elements().style('display', 'none');
+            // 仅展示选定关系类型的边和相连的节点
+            elementsToShow.style('display', 'element');
+        } else {
+            // 如果没有选定关系类型，则展示所有元素
+            cy.elements().style('display', 'element');
+        }
+    });
+
+    // 重置按钮逻辑（如果需要）
+    // 当想要显示整个图时，可以使用一个重置按钮来恢复显示所有元素
+    document.getElementById('resetBtn').addEventListener('click', function() {
+        cy.elements().style('display', 'element');
+    });
     
+    // 导出为PNG
+    document.getElementById('exportPng').addEventListener('click', function() {
+        var png64 = cy.png(); // 获取PNG图像的base64编码
+        var downloadLink = document.createElement('a');
+        downloadLink.href = png64;
+        downloadLink.download = 'graph.png';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    });
+
+    // 导出为JPG
+    document.getElementById('exportJpg').addEventListener('click', function() {
+        var jpg64 = cy.jpg(); // 获取JPG图像的base64编码
+        var downloadLink = document.createElement('a');
+        downloadLink.href = jpg64;
+        downloadLink.download = 'graph.jpg';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    });
 
     // 交互式增强
     cy.on('mouseover', 'node', function(event) {

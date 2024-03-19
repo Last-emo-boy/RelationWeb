@@ -64,6 +64,23 @@
         <input type="text" id="nodeA" placeholder="Start node ID">
         <input type="text" id="nodeB" placeholder="End node ID">
         <button id="findPath">Find Path</button>
+        <!-- 新增搜索节点的输入框 -->
+        <input type="text" id="searchInput" placeholder="Search node by keyword">
+        <button id="searchBtn">Search</button>
+        <!-- 新增关系类型过滤的下拉菜单 -->
+        <select id="relationshipFilter">
+            <option value="">Select Relationship Type</option>
+            <option value="current_partner">Current Partner</option>
+            <option value="ex_partner">Ex Partner</option>
+            <option value="affection">Affection</option>
+            <!-- 根据需要添加其他关系类型 -->
+        </select>
+        <button id="filterBtn">Apply Filter</button>
+        <!-- 新增重置视图的按钮 -->
+        <button id="resetBtn">Reset View</button>
+        <!-- 新增导出图表的按钮 -->
+        <button id="exportPng">Export as PNG</button>
+        <button id="exportJpg">Export as JPG</button>
     </div>
     <header>Love Graph</header>
     <div id="cy"></div>
