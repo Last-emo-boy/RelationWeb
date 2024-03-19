@@ -6,36 +6,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #f5f5f5;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: start;
-            height: 100vh;
         }
         header {
-            width: 80vw;
-            padding: 20px 0;
+            margin-top: 20px;
             text-align: center;
             font-size: 24px;
             font-weight: 500;
             color: #333;
         }
         #cy {
-            width: 80vw;
+            width: 90%; /* 默认宽度 */
+            /*max-width: 1200px; /* 最大宽度 */
+            margin: 20px auto; /* 上下间距和居中 */
             height: 70vh;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            background-color: #fff;
-            margin-top: 20px;
         }
+        
+        @media (min-width: 768px) {
+            .container {
+                width: 750px;
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .container {
+                width: 970px;
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .container {
+                width: 1170px;
+            }
+        }
+         
         #info {
-            width: 80vw;
             margin-top: 20px;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -52,39 +65,87 @@
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: auto; /* Adjust based on content */
         }
         .search-box input,
+        .search-box select,
         .search-box button {
-            margin-bottom: 5px;
+            margin: 5px 0;
+            padding: 8px;
+            width: auto; /* Allow default Bootstrap width */
+            box-sizing: border-box; /* Ensures padding doesn't affect overall width */
+        }
+        .search-box button {
+            background-color: #4CAF50; /* A green background */
+            color: white; /* White text color */
+            border: none; /* No borders */
+            border-radius: 4px; /* Rounded corners */
+            cursor: pointer; /* Pointer/hand icon */
+            font-size: 14px; /* Slightly smaller font size */
+        }
+        .search-box button:hover {
+            background-color: #45a049; /* Darker green background on hover */
+        }
+        .search-box select {
+            border: 1px solid #ccc; /* Light grey border */
+            border-radius: 4px; /* Rounded corners */
         }
     </style>
+    
+        
 </head>
 <body>
-    <div class="search-box">
-        <input type="text" id="nodeA" placeholder="Start node ID">
-        <input type="text" id="nodeB" placeholder="End node ID">
-        <button id="findPath">Find Path</button>
-        <!-- 新增搜索节点的输入框 -->
-        <input type="text" id="searchInput" placeholder="Search node by keyword">
-        <button id="searchBtn">Search</button>
-        <!-- 新增关系类型过滤的下拉菜单 -->
-        <select id="relationshipFilter">
-            <option value="">Select Relationship Type</option>
-            <option value="current_partner">Current Partner</option>
-            <option value="ex_partner">Ex Partner</option>
-            <option value="affection">Affection</option>
-            <!-- 根据需要添加其他关系类型 -->
-        </select>
-        <button id="filterBtn">Apply Filter</button>
-        <!-- 新增重置视图的按钮 -->
-        <button id="resetBtn">Reset View</button>
-        <!-- 新增导出图表的按钮 -->
-        <button id="exportPng">Export as PNG</button>
-        <button id="exportJpg">Export as JPG</button>
+    <div class="container-fluid mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8"> <!-- Adjusted for wider screens -->
+                <header class="text-center mb-4">
+                    <h1>Love Graph</h1>
+                </header>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div id="cy" style="height: 70vh;"></div>
+                    </div>
+                </div>
+                <div id="info" class="alert alert-info">点击节点查看信息</div>
+
+                <!-- Toggle Button for Search Box -->
+                <button class="btn btn-info mb-2" type="button" data-toggle="collapse" data-target="#searchBox" aria-expanded="false" aria-controls="searchBox">
+                    Toggle Search Box
+                </button>
+
+                <!-- Collapsible Search Box -->
+                <div class="collapse" id="searchBox">
+                    <div class="card card-body mb-4">
+                        <input type="text" id="nodeA" class="form-control mb-2" placeholder="Start node ID">
+                        <input type="text" id="nodeB" class="form-control mb-2" placeholder="End node ID">
+                        <button id="findPath" class="btn btn-primary mb-2">Find Path</button>
+                        <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search node by keyword">
+                        <button id="searchBtn" class="btn btn-secondary mb-2">Search</button>
+                        <select id="relationshipFilter" class="form-control mb-2">
+                            <option value="">Select Relationship Type</option>
+                            <option value="current_partner">Current Partner</option>
+                            <option value="ex_partner">Ex Partner</option>
+                            <option value="affection">Affection</option>
+                        </select>
+                        <button id="filterBtn" class="btn btn-info mb-2">Apply Filter</button>
+                        <button id="resetBtn" class="btn btn-warning mb-2">Reset View</button>
+                        <button id="exportPng" class="btn btn-success mb-2">Export as PNG</button>
+                        <button id="exportJpg" class="btn btn-success mb-2">Export as JPG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <header>Love Graph</header>
-    <div id="cy"></div>
-    <div id="info">点击节点查看信息</div>
     <script src="script.js"></script>
+    <!-- Bootstrap JS for Collapse functionality -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
+
+
 </html>

@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function(){
             { data: { id: 'e21', source: '严雍寒', target: '张译匀', relationship: 'EX_PARTNER' } },
             { data: { id: 'e22', source: '张译匀', target: '严雍寒', relationship: 'EX_PARTNER' } },
             { data: { id: 'e23', source: '严雍寒', target: '方晨曦', relationship: 'EX_PARTNER' } },
-            { data: { id: 'e24', source: '方晨曦', target: '严雍寒', relationship: 'EX_PARTNER' } },
+            // { data: { id: 'e24', source: '方晨曦', target: '严雍寒', relationship: 'EX_PARTNER' } },
             { data: { id: 'e25', source: '林验', target: '董沐言', relationship: 'EX_PARTNER' } },
             { data: { id: 'e26', source: '董沐言', target: '林验', relationship: 'EX_PARTNER' } },
             { data: { id: 'e27', source: '王圣涵', target: '何晨杰', relationship: 'EX_PARTNER' } },
@@ -350,12 +350,11 @@ document.addEventListener('DOMContentLoaded', function(){
             coolingFactor: 0.99,
             minTemp: 1.0
         }
-        
-        
-        
-        
-        
     });
+
+    // 获取切换按钮和搜索框的元素
+    var toggleButton = document.getElementById('toggleSearchBox');
+    var searchBox = document.getElementById('searchBox');
 
     document.getElementById('findPath').addEventListener('click', function() {
         const startId = document.getElementById('nodeA').value.trim();
@@ -442,6 +441,18 @@ document.addEventListener('DOMContentLoaded', function(){
         document.body.removeChild(downloadLink);
     });
 
+    /*
+    // 绑定点击事件处理器到切换按钮
+    toggleButton.addEventListener('click', function() {
+        // 检查搜索框当前的显示状态，并切换它
+        if (searchBox.style.display === 'none') {
+            searchBox.style.display = 'block'; // 显示搜索框
+        } else {
+            searchBox.style.display = 'none'; // 隐藏搜索框
+        }
+    });
+    */
+
     // 交互式增强
     cy.on('mouseover', 'node', function(event) {
         event.target.animate({
@@ -472,7 +483,5 @@ document.addEventListener('DOMContentLoaded', function(){
                         '<br>单向关系数 (AFFECTION): ' + affectionCount +
                         '<br>双向关系数 (EX_PARTNER, CURRENT_PARTNER等): ' + otherRelationshipsCount +
                         '<br>总关系数: ' + totalRelationships;
-    });
-
-    
+    });    
 });
