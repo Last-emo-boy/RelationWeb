@@ -122,6 +122,9 @@ document.addEventListener('DOMContentLoaded', function(){
             {'data': {'id': '王辰茵', 'gender': '女'}}, 
             {'data': {'id': '陈奕添', 'gender': '男'}}, 
             {'data': {'id': '武奇', 'gender': '男'}},
+            {'data': {'id': '吴思涵', 'gender': '女'}},
+            {'data': {'id': '陈昱桐', 'gender': '男'}},
+            {'data': {'id': '姚君竹', 'gender': '男'}},
 
             // 边
             { data: { id: 'e1', source: '周而成', target: '刘君明', relationship: 'EX_PARTNER' } },
@@ -212,7 +215,39 @@ document.addEventListener('DOMContentLoaded', function(){
             { data: { id: 'c27', source: '吕沁然', target: '吕韦凝', relationship: 'CURRENT_PARTNER' } },
             { data: { id: 'c28', source: '吕韦凝', target: '吕沁然', relationship: 'CURRENT_PARTNER' } },
             { data: { id: 'c29', source: '曹禛', target: '张扬婧', relationship: 'CURRENT_PARTNER' } },
-            { data: { id: 'c30', source: '张扬婧', target: '曹禛', relationship: 'CURRENT_PARTNER' } }
+            { data: { id: 'c30', source: '张扬婧', target: '曹禛', relationship: 'CURRENT_PARTNER' } },
+            { data: { id: 'a1', source: '周而成', target: '陈辰', relationship: 'AFFECTION' } },
+            { data: { id: 'a2', source: '吴思涵', target: '陈昱桐', relationship: 'AFFECTION' } },
+            { data: { id: 'a3', source: '陈予谦', target: '王伊倩', relationship: 'AFFECTION' } },
+            { data: { id: 'a4', source: '陈予谦', target: '方彬羽', relationship: 'AFFECTION' } },
+            { data: { id: 'a5', source: '陈予谦', target: '李若宁', relationship: 'AFFECTION' } },
+            { data: { id: 'a6', source: '严雍寒', target: '楼思越', relationship: 'AFFECTION' } },
+            { data: { id: 'a7', source: '何晨杰', target: '楼思越', relationship: 'AFFECTION' } },
+            { data: { id: 'a8', source: '楼思越', target: '何晨杰', relationship: 'AFFECTION' } },
+            { data: { id: 'a9', source: '姚君竹', target: '王圣涵', relationship: 'AFFECTION' } },
+            { data: { id: 'a10', source: '王圣涵', target: '韦子余', relationship: 'AFFECTION' } },
+            { data: { id: 'a11', source: '王圣涵', target: '秦汉文', relationship: 'AFFECTION' } },
+            { data: { id: 'a12', source: '秦汉文', target: '葛语歆', relationship: 'AFFECTION' } },
+            { data: { id: 'a13', source: '黄子宸', target: '徐嘉一', relationship: 'AFFECTION' } },
+            { data: { id: 'a14', source: '段佩辰', target: '张译匀', relationship: 'AFFECTION' } },
+            { data: { id: 'a15', source: '朱闻哲', target: '林以衡', relationship: 'AFFECTION' } },
+            { data: { id: 'a16', source: '何晨杰', target: '赵倩楠', relationship: 'AFFECTION' } },
+            { data: { id: 'a17', source: '彭泓钦', target: '赵倩楠', relationship: 'AFFECTION' } },
+            { data: { id: 'a18', source: '黄子宸', target: '万天艺', relationship: 'AFFECTION' } },
+            { data: { id: 'a19', source: '宋宇轩', target: '葛恒嘉', relationship: 'AFFECTION' } },
+            { data: { id: 'a20', source: '楼文颉', target: '王乐其', relationship: 'AFFECTION' } },
+            { data: { id: 'a21', source: '楼文颉', target: '王煜菲', relationship: 'AFFECTION' } },
+            { data: { id: 'a22', source: '侯思成', target: '陆朵朵', relationship: 'AFFECTION' } },
+            { data: { id: 'a23', source: '葛恒嘉', target: '姜一寻', relationship: 'AFFECTION' } },
+            { data: { id: 'a24', source: '郑筑轩', target: '方徐知', relationship: 'AFFECTION' } },
+            { data: { id: 'a25', source: '张津', target: '陈宣妤', relationship: 'AFFECTION' } },
+            { data: { id: 'a26', source: '张津', target: '李若宁', relationship: 'AFFECTION' } },
+            { data: { id: 'a27', source: '施展', target: '方晨曦', relationship: 'AFFECTION' } },
+            { data: { id: 'a28', source: '温伽睿', target: '张庭尔', relationship: 'AFFECTION' } },
+            { data: { id: 'a29', source: '倪哲晟', target: '陈辰', relationship: 'AFFECTION' } },
+            { data: { id: 'a30', source: '秦汉文', target: '于小格', relationship: 'AFFECTION' } },
+            { data: { id: 'a31', source: '赵虹昇', target: '葛恒嘉', relationship: 'AFFECTION' } },
+
 
 
         ],
@@ -276,22 +311,26 @@ document.addEventListener('DOMContentLoaded', function(){
 
         layout: {
             name: 'cose',
-            idealEdgeLength: 100,
-            nodeOverlap: 20,
+            idealEdgeLength: 150, // 适度增加理想边长以展示清晰的关系，但不至于过分分散
+            nodeRepulsion: function( node ){ return 8000; }, // 适当的排斥力以保持节点间距离
+            nodeOverlap: 60,
             fit: true,
             padding: 30,
-            randomize: false,
-            nodeRepulsion: function( node ){ return 4096; },
-            componentSpacing: 100,
-            nodeSpacing: function( node ){ return 10; },
-            edgeElasticity: function( edge ){ return 100; },
-            nestingFactor: 5,
-            gravity: 80,
-            numIter: 1000,
-            initialTemp: 200,
-            coolingFactor: 0.95,
+            randomize: true,
+            componentSpacing: 150,
+            nodeSpacing: function( node ){ return 30; },
+            edgeElasticity: function( edge ){ return 120; },
+            nestingFactor: 50, // 调整以改善嵌套布局的表现，但避免过度
+            gravity: 0.1, // 减少以避免节点过于集中或分散
+            numIter: 1500, // 调整迭代次数以找到平衡点
+            initialTemp: 300,
+            coolingFactor: 0.99,
             minTemp: 1.0
         }
+        
+        
+        
+        
         
     });
 
