@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Love Graph</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+            height: 100vh;
+        }
+        header {
+            width: 80vw;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 500;
+            color: #333;
+        }
+        #cy {
+            width: 80vw;
+            height: 70vh;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            background-color: #fff;
+            margin-top: 20px;
+        }
+        #info {
+            width: 80vw;
+            margin-top: 20px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            background-color: #fff;
+            font-size: 16px;
+            color: #333;
+        }
+        .search-box {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+        }
+        .search-box input,
+        .search-box button {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-box">
+        <input type="text" id="nodeA" placeholder="Start node ID">
+        <input type="text" id="nodeB" placeholder="End node ID">
+        <button id="findPath">Find Path</button>
+    </div>
+    <header>Love Graph</header>
+    <div id="cy"></div>
+    <div id="info">点击节点查看信息</div>
+    <script src="script.js"></script>
+</body>
+</html>
