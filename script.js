@@ -340,23 +340,51 @@ document.addEventListener('DOMContentLoaded', function(){
         ],
 
         layout: {
-            name: 'cose',
-            idealEdgeLength: 150, // 适度增加理想边长以展示清晰的关系，但不至于过分分散
-            nodeRepulsion: function( node ){ return 8000; }, // 适当的排斥力以保持节点间距离
-            nodeOverlap: 60,
+            name: 'cose-bilkent',
+            // 布局期间是否应包括节点的标签尺寸
+            nodeDimensionsIncludeLabels: false,
+            // 力模型迭代的刷新频率（以毫秒为单位）
+            refresh: 10,
+            // 布局完成后是否自动调整大小以适应视图
             fit: true,
-            padding: 30,
+            // 视图四周的填充量
+            padding: 15,
+            // 布局开始前是否随机放置节点
             randomize: true,
-            componentSpacing: 150,
-            nodeSpacing: function( node ){ return 30; },
-            edgeElasticity: function( edge ){ return 120; },
-            nestingFactor: 50, // 调整以改善嵌套布局的表现，但避免过度
-            gravity: 0.1, // 减少以避免节点过于集中或分散
-            numIter: 1500, // 调整迭代次数以找到平衡点
-            initialTemp: 300,
-            coolingFactor: 0.99,
-            minTemp: 1.0
+            // 边的理想长度
+            idealEdgeLength: 100,
+            // 力模型是否应该在布局期间或仅在布局结束时应用动画
+            animate: 'end',
+            // 动画的缓动函数
+            animationEasing: 'ease-in-out',
+            // 动画持续时间
+            animationDuration: 1000,
+            // 是否使用无穷远的理想边长（默认：false）
+            infinite: true,
+            // 是否避免节点重叠
+            avoidOverlap: true,
+            // 是否允许节点重叠
+            allowNodesOverlap: false,
+            // 节点重叠时的节点间距
+            nodeOverlap: 15,
+            // 未连接节点的斥力因子
+            nodeRepulsion: 4500,
+            // 边缘弹性（刚性）的理想值
+            idealInterClusterEdgeLengthCoefficient: 1.4,
+            // 重力大小（吸引节点到公共中心）
+            gravity: 0.1,
+            // 重力计算的范围（与视图比例）
+            gravityRange: 3.8,
+            // 重力复合节点强度
+            gravityCompound: 1.0,
+            // 重力范围复合
+            gravityRangeCompound: 1.5,
+            // 嵌套在复合节点中的节点的重力大小
+            nestingFactor: 0.1,
+            // 定义边缘长度计算的数值函数
         }
+        
+        
     });
 
     // 获取切换按钮和搜索框的元素
@@ -490,5 +518,5 @@ document.addEventListener('DOMContentLoaded', function(){
                         '<br>单向关系数 (AFFECTION): ' + affectionCount +
                         '<br>双向关系数 (EX_PARTNER, CURRENT_PARTNER等): ' + otherRelationshipsCount +
                         '<br>总关系数: ' + totalRelationships;
-    });    
+    });
 });
