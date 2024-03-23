@@ -14,106 +14,18 @@
     <title>Love Graph</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
     <script src="https://unpkg.com/layout-base/layout-base.js"></script>
     <script src="https://unpkg.com/cose-base/cose-base.js"></script>
+    <link href="style.css" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
-
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-            align-items: center;
-            justify-content: start;
-        }
-        header {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: 500;
-            color: #333;
-        }
-        #cy {
-            width: 90%; /* 默认宽度 */
-            /*max-width: 1200px; /* 最大宽度 */
-            margin: 20px auto; /* 上下间距和居中 */
-            height: 70vh;
-        }
-        
-        @media (min-width: 768px) {
-            .container {
-                width: 750px;
-            }
-        }
-        
-        @media (min-width: 992px) {
-            .container {
-                width: 970px;
-            }
-        }
-        
-        @media (min-width: 1200px) {
-            .container {
-                width: 1170px;
-            }
-        }
-         
-        #info {
-            margin-top: 20px;
-            padding: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            background-color: #fff;
-            font-size: 16px;
-            color: #333;
-        }
-        .search-box {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            width: auto; /* Adjust based on content */
-        }
-        .search-box input,
-        .search-box select,
-        .search-box button {
-            margin: 5px 0;
-            padding: 8px;
-            width: auto; /* Allow default Bootstrap width */
-            box-sizing: border-box; /* Ensures padding doesn't affect overall width */
-        }
-        .search-box button {
-            background-color: #4CAF50; /* A green background */
-            color: white; /* White text color */
-            border: none; /* No borders */
-            border-radius: 4px; /* Rounded corners */
-            cursor: pointer; /* Pointer/hand icon */
-            font-size: 14px; /* Slightly smaller font size */
-        }
-        .search-box button:hover {
-            background-color: #45a049; /* Darker green background on hover */
-        }
-        .search-box select {
-            border: 1px solid #ccc; /* Light grey border */
-            border-radius: 4px; /* Rounded corners */
-        }
-    </style>
-    
-        
 </head>
 <body>
     <div class="container-fluid mt-5">
         <div class="row justify-content-center">
-            <div class="col-lg-10 col-xl-8"> <!-- Adjusted for wider screens -->
+            <div class="col-lg-10 col-xl-8">
                 <header class="text-center mb-4">
                     <h1>Love Graph</h1>
                 </header>
@@ -123,13 +35,9 @@
                     </div>
                 </div>
                 <div id="info" class="alert alert-info">点击节点查看信息</div>
-
-                <!-- Toggle Button for Search Box -->
                 <button class="btn btn-info mb-2" type="button" data-toggle="collapse" data-target="#searchBox" aria-expanded="false" aria-controls="searchBox">
                     Toggle Search Box
                 </button>
-
-                <!-- Collapsible Search Box -->
                 <div class="collapse" id="searchBox">
                     <div class="card card-body mb-4">
                         <input type="text" id="nodeA" class="form-control mb-2" placeholder="Start node ID">
@@ -167,7 +75,4 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-
-
-
 </html>
