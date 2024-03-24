@@ -4,10 +4,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
         elements: [
             // 节点
-            { data: { id: '周而成', gender: '男' } },
-            { data: { id: '刘君明', gender: '女' } },
-            { data: { id: '乐昕荣', gender: '男' } },
-
             {'data': {'id': '周而成', 'gender': '男'}}, 
             {'data': {'id': '刘君明', 'gender': '女'}}, 
             {'data': {'id': '乐昕荣', 'gender': '男'}}, 
