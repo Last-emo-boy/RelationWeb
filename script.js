@@ -125,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function(){
             {'data': {'id': '吴思涵', 'gender': '女'}},
             {'data': {'id': '陈昱桐', 'gender': '男'}},
             {'data': {'id': '姚君竹', 'gender': '男'}},
+            {'data': {'id': '姜艺蕾', 'gender': '女'}},
 
             // 边
             { data: { id: 'e1', source: '周而成', target: '刘君明', relationship: 'EX_PARTNER' } },
@@ -222,6 +223,9 @@ document.addEventListener('DOMContentLoaded', function(){
             { data: { id: 'c28', source: '吕韦凝', target: '吕沁然', relationship: 'CURRENT_PARTNER' } },
             { data: { id: 'c29', source: '曹禛', target: '张扬婧', relationship: 'CURRENT_PARTNER' } },
             { data: { id: 'c30', source: '张扬婧', target: '曹禛', relationship: 'CURRENT_PARTNER' } },
+            { data: { id: 'c31', source: '姚博文', target: '姜艺蕾', relationship: 'CURRENT_PARTNER' } },
+            { data: { id: 'c32', source: '姜艺蕾', target: '姚博文', relationship: 'CURRENT_PARTNER' } },
+
             { data: { id: 'a1', source: '周而成', target: '陈辰', relationship: 'AFFECTION' } },
             { data: { id: 'a2', source: '吴思涵', target: '陈昱桐', relationship: 'AFFECTION' } },
             { data: { id: 'a3', source: '陈予谦', target: '王伊倩', relationship: 'AFFECTION' } },
@@ -265,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function(){
             { data: { id: 'a41', source: '侯思成', target: '冯诗悦', relationship: 'AFFECTION' } },
             { data: { id: 'a42', source: '张盛洋', target: '马希予', relationship: 'AFFECTION' } },
             { data: { id: 'a43', source: '武奇', target: '马希予', relationship: 'AFFECTION' } },
-            { data: { id: 'a44', source: '姚博文', target: '方馨', relationship: 'AFFECTION' } },
+            // { data: { id: 'a44', source: '姚博文', target: '方馨', relationship: 'AFFECTION' } },
             { data: { id: 'a45', source: '肖景元', target: '刘君明', relationship: 'AFFECTION' } },
             { data: { id: 'a46', source: '吴弘宇', target: '张沁媛', relationship: 'AFFECTION' } },
             { data: { id: 'a47', source: '郑筑轩', target: '刘燕霖', relationship: 'AFFECTION' } },
