@@ -10,8 +10,16 @@
 
         gtag('config', 'G-J6V8G528D2');
     </script>
-    <meta charset="UTF-8">
-    <title>Love Graph</title>
+    <script type="application/ld+json">
+        {
+          "@context": "http://schema.org",
+          "@type": "WebApplication",
+          "name": "Love Graph",
+          "description": "Visualize and explore relationship connections."
+        }
+    </script>        
+    <title>Love Graph - Explore Relationship Connections</title>
+    <meta name="description" content="Discover and explore the complex web of relationships with Love Graph. Visualize connections, find paths, and search for nodes based on relationship types.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
@@ -35,9 +43,11 @@
                     </div>
                 </div>
                 <div id="info" class="alert alert-info">点击节点查看信息</div>
-                <button class="btn btn-info mb-2" type="button" data-toggle="collapse" data-target="#searchBox" aria-expanded="false" aria-controls="searchBox">
-                    Toggle Search Box
-                </button>
+                <div class="centered-container">
+                    <button class="btn btn-info mb-2 toggle-search-box" type="button" data-toggle="collapse" data-target="#searchBox" aria-expanded="false" aria-controls="searchBox">
+                        Toggle Search Box
+                    </button>
+                </div>                     
                 <div class="collapse" id="searchBox">
                     <div class="card card-body mb-4">
                         <input type="text" id="nodeA" class="form-control mb-2" placeholder="Start node ID">
@@ -66,6 +76,12 @@
                         async>
                     </script>
                 </div>
+                <!-- Social Share Buttons -->
+            <div class="social-share-buttons text-center mt-4">
+                <a href="#" onclick="shareOnFacebook()" class="social-button"><i class="fab fa-facebook-f"></i> Share on Facebook</a>
+                <a href="#" onclick="shareOnTwitter()" class="social-button"><i class="fab fa-twitter"></i> Share on Twitter</a>
+                <a href="#" onclick="shareOnLinkedIn()" class="social-button"><i class="fab fa-linkedin-in"></i> Share on LinkedIn</a>
+            </div>
             </div>
         </div>
     </div>
