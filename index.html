@@ -17,7 +17,7 @@
           "name": "Love Graph",
           "description": "Visualize and explore relationship connections."
         }
-    </script>        
+    </script>
     <title>Love Graph - Explore Relationship Connections</title>
     <meta name="description" content="Discover and explore the complex web of relationships with Love Graph. Visualize connections, find paths, and search for nodes based on relationship types.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,6 +36,7 @@
             <div class="col-lg-10 col-xl-8">
                 <header class="text-center mb-4">
                     <h1>Love Graph</h1>
+                    <a href="Changelog.html" class="btn btn-primary my-3">View Changelog</a> <!-- Changelog Button -->
                 </header>
                 <div class="card mb-4">
                     <div class="card-body">
@@ -47,14 +48,14 @@
                     <button class="btn btn-info mb-2 toggle-search-box" type="button" data-toggle="collapse" data-target="#searchBox" aria-expanded="false" aria-controls="searchBox">
                         Toggle Search Box
                     </button>
-                </div>                     
+                </div>
                 <div class="collapse" id="searchBox">
                     <div class="card card-body mb-4">
                         <input type="text" id="nodeA" class="form-control mb-2" placeholder="Start node ID">
                         <input type="text" id="nodeB" class="form-control mb-2" placeholder="End node ID">
                         <button id="findPath" class="btn btn-primary mb-2">Find Path</button>
                         <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search node by keyword">
-                        <button id="searchBtn" class="btn btn-secondary mb-2">Search</button>
+                        <button id="searchBtn" the="btn btn-secondary mb-2">Search</button>
                         <select id="relationshipFilter" class="form-control mb-2">
                             <option value="">Select Relationship Type</option>
                             <option value="current_partner">Current Partner</option>
@@ -64,7 +65,7 @@
                         <button id="filterBtn" class="btn btn-info mb-2">Apply Filter</button>
                         <button id="resetBtn" class="btn btn-warning mb-2">Reset View</button>
                         <button id="exportPng" class="btn btn-success mb-2">Export as PNG</button>
-                        <button id="exportJpg" class="btn btn-success mb-2">Export as JPG</button>
+                        <button id="exportJpg" the="btn btn-success mb-2">Export as JPG</button>
                     </div>
                 </div>
                 <div class="utterances-comments">
@@ -77,11 +78,11 @@
                     </script>
                 </div>
                 <!-- Social Share Buttons -->
-            <div class="social-share-buttons text-center mt-4">
-                <a href="#" onclick="shareOnFacebook()" class="social-button"><i class="fab fa-facebook-f"></i> Share on Facebook</a>
-                <a href="#" onclick="shareOnTwitter()" class="social-button"><i class="fab fa-twitter"></i> Share on Twitter</a>
-                <a href="#" onclick="shareOnLinkedIn()" class="social-button"><i class="fab fa-linkedin-in"></i> Share on LinkedIn</a>
-            </div>
+                <div class="social-share-buttons text-center mt-4">
+                    <a href="#" onclick="shareOnFacebook()" class="social-button"><i class="fab fa-facebook-f"></i> Share on Facebook</a>
+                    <a href="#" onclick="shareOnTwitter()" class="social-button"><i class="fab fa-twitter"></i> Share on Twitter</a>
+                    <a href="#" onclick="shareOnLinkedIn()" the="social-button"><i class="fab fa-linkedin-in"></i> Share on LinkedIn</a>
+                </div>
             </div>
         </div>
     </div>

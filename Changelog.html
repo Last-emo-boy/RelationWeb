@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog - Love Graph</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0056b3;
+        }
+        h2 {
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 5px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .date {
+            font-style: italic;
+            color: #666;
+        }
+        .btn-link {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px 0;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .btn-link:hover {
+            background-color: #0056b3;
+        }
+        .sensitive {
+            background-color: black;
+            color: black;
+            border-radius: 4px;
+            padding: 0 4px;
+        }
+        .sensitive:hover, .sensitive:focus {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Add touch event for touch devices
+        document.querySelectorAll('.sensitive').forEach(item => {
+            item.addEventListener('touchstart', function() {
+                this.style.color = 'white';
+            }, false);
+        });
+    </script>
+    <div class="container">
+        <h1>Changelog</h1>
+        <section>
+            <h2>版本 1.3.1 - <span class="date">2024-04-30</span></h2>
+            <ul>
+                <li>新增了一个新节点</li>
+                <li>删除四条EX_PARTNER关系（对，因为<span class="sensitive">有小傻逼</span>情侣复合了），新增为CURRENT_PARTNER</li>
+                <li>新增两条CURRENT_PARTNER关系</li>
+                <li>
+                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/06d5f6e6a60558a2bc535e0c454ea10f525eafae" class="btn-link" target="_blank">查看提交</a>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>版本 1.3.1 - <span class="date">2024-03-24</span></h2>
+            <ul>
+                <li>新增了一个新节点</li>
+                <li>新增两条CURRENT_PARTNER</li>
+                <li>删除一条AFFECTION关系</li>
+                <li>
+                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/8b0e424dfbef5cb069caebcdcec732f15010c2ec" class="btn-link" target="_blank">查看提交</a>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>版本 1.3.0 - <span class="date">2024-03-23</span></h2>
+            <ul>
+                <li>增加了Github评论系统</li>
+                <li>
+                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/1d1ff2e3f1f60ddf68beadced535d89e4159041c" class="btn-link" target="_blank">查看提交</a>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>版本 1.2.1 - <span class="date">2024-03-19</span></h2>
+            <ul>
+                <li>新增了三个新节点</li>
+                <li>修复了一些问题</li>
+                <li>新增32条AFFECTION关系</li>
+                <li>
+                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/90e23f6a14141da5f9d3e860396c6b2802e37370" class="btn-link" target="_blank">查看提交</a>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>版本 1.2.0 - <span class="date">2024-03-19</span></h2>
+            <ul>
+                <li>新增了关系类型的可视化工具。</li>
+                <li>改进搜索算法，增加了模糊匹配功能。</li>
+                <li>修复了移动响应性相关的错误。</li>
+                <li>
+                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/64c45a0396b5ab95d30748896908f1934d4f4a75" class="btn-link" target="_blank">查看提交</a>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>版本 1.1.0 - <span class="date">2024-03-19</span></h2>
+            <ul>
+                <li>引入了导出图形为PNG和JPG的功能。</li>
+                <li>更新用户界面，以提供更好的用户体验。</li>
+                <li>小修小补，性能提升。</li>
+                <li>
+                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/64c45a0396b5ab95d30748896908f1934d4f4a75" class="btn-link" target="_blank">查看提交</a>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>版本 1.0.0 - <span class="date">2024-03-19</span></h2>
+            <ul>
+                <li>Love Graph初次发布。</li>
+                <li>功能包括探索和可视化关系连接。</li>
+                <li>
+                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/64c45a0396b5ab95d30748896908f1934d4f4a75" class="btn-link" target="_blank">查看提交</a>
+                </li>
+            </ul>
+        </section>        
+    </div>
+</body>
+</html>
