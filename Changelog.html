@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Changelog - Love Graph</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Bundle JS (包括Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -82,21 +88,112 @@
                 <li>删除四条EX_PARTNER关系（对，因为<span class="sensitive">有小傻逼</span>情侣复合了），新增为CURRENT_PARTNER</li>
                 <li>新增两条CURRENT_PARTNER关系</li>
                 <li>
+                    新增两条EX_PARTNER关系
+                    <button data-bs-toggle="modal" data-bs-target="#modalThree">查看详细</button>
+                </li>
+                
+                <li>
                     <a href="https://github.com/Last-emo-boy/RelationWeb/commit/06d5f6e6a60558a2bc535e0c454ea10f525eafae" class="btn-link" target="_blank">查看提交</a>
                 </li>
             </ul>
         </section>
+
+        <!-- 模态窗口内容 -->
+        <div class="modal" id="modalThree" tabindex="-1" aria-labelledby="modalThreeLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalThreeLabel">详细的AFFECTION关系</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>新增节点</h6>
+                        <ul>
+                            <li>1. {'data': {'id': '毕文凯', 'gender': '男'}} </li>
+                        </ul>
+                        <h6>删除EX_PARTNER关系</h6>
+                        <ul>
+                            <li>
+                                <ul>
+                                    <li>段佩辰 <--> 施与姚</li>
+                                    <li>温伽睿 <--> 方徐知</li>
+                                    <li>沈天阔 <--> 夏印荷</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h6>新增EX_PARTNER关系</h6>
+                        <ul>
+                            <li>
+                                <ul>
+                                    <li>毕文凯 <--> 陈辰</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h6>新增AFFECTION关系</h6>
+                        <ul>
+                            <li>
+                                <ul>
+                                    <li>段佩辰 <--> 施与姚</li>
+                                    <li>温伽睿 <--> 方徐知</li>
+                                    <li>沈天阔 <--> 夏印荷</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <section>
             <h2>版本 1.3.1 - <span class="date">2024-03-24</span></h2>
             <ul>
                 <li>新增了一个新节点</li>
                 <li>新增两条CURRENT_PARTNER</li>
-                <li>删除一条AFFECTION关系</li>
+                <li>
+                    删除一条AFFECTION关系
+                    <button data-bs-toggle="modal" data-bs-target="#modalTwo">查看详细</button>
+                </li>
+                
                 <li>
                     <a href="https://github.com/Last-emo-boy/RelationWeb/commit/8b0e424dfbef5cb069caebcdcec732f15010c2ec" class="btn-link" target="_blank">查看提交</a>
                 </li>
             </ul>
         </section>
+
+
+        <!-- 模态窗口内容 -->
+        <div class="modal" id="modalTwo" tabindex="-1" aria-labelledby="modalTwoLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTwoLabel">详细的AFFECTION关系</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>新增节点</h6>
+                        <ul>
+                            <li>1. {'data': {'id': '姜艺蕾', 'gender': '女'}} </li>
+                        </ul>
+                        <h6>新增CURRENT_PARTNER关系</h6>
+                        <ul>
+                            <li>
+                                <ul>
+                                    <li>姚博文 <--> 姜艺蕾</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h6>删除AFFECTION关系</h6>
+                        <ul>
+                            <li>
+                                <ul>
+                                    <li>姚博文 --> 姜艺蕾</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
         <section>
             <h2>版本 1.3.0 - <span class="date">2024-03-23</span></h2>
             <ul>
@@ -111,12 +208,74 @@
             <ul>
                 <li>新增了三个新节点</li>
                 <li>修复了一些问题</li>
-                <li>新增32条AFFECTION关系</li>
+                <li>
+                    新增32条AFFECTION关系
+                    <button data-bs-toggle="modal" data-bs-target="#modalOne">查看详细</button>
+                </li>
                 <li>
                     <a href="https://github.com/Last-emo-boy/RelationWeb/commit/90e23f6a14141da5f9d3e860396c6b2802e37370" class="btn-link" target="_blank">查看提交</a>
                 </li>
             </ul>
         </section>
+        
+        <!-- 模态窗口内容 -->
+        <div class="modal" id="modalOne" tabindex="-1" aria-labelledby="modalOneLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalOneLabel">详细的AFFECTION关系</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>新增节点</h6>
+                        <ul>
+                            <li>1. {'id': '吴思涵', 'gender': '女'} </li>
+                            <li>2. {'id': '陈昱桐', 'gender': '男'}</li>
+                            <li>3. {'id': '姚君竹', 'gender': '男'}</li>
+                        </ul>
+                        <h6>新增AFFECTION关系</h6>
+                        <ul>
+                            <li>
+                                <ul>
+                                    <li>周而成 --> 陈辰</li>
+                                    <li>吴思涵 --> 陈昱桐</li>
+                                    <li>陈予谦 --> 王伊倩</li>
+                                    <li>陈予谦 --> 方彬羽</li>
+                                    <li>陈予谦 --> 李若宁</li>
+                                    <li>严雍寒 --> 楼思越</li>
+                                    <li>何晨杰 --> 楼思越</li>
+                                    <li>楼思越 --> 何晨杰</li>
+                                    <li>姚君竹 --> 王圣涵</li>
+                                    <li>王圣涵 --> 韦子余</li>
+                                    <li>王圣涵 --> 秦汉文</li>
+                                    <li>秦汉文 --> 葛语歆</li>
+                                    <li>黄子宸 --> 徐嘉一</li>
+                                    <li>段佩辰 --> 张译匀</li>
+                                    <li>朱闻哲 --> 林以衡</li>
+                                    <li>何晨杰 --> 赵倩楠</li>
+                                    <li>彭泓钦 --> 赵倩楠</li>
+                                    <li>黄子宸 --> 万天艺</li>
+                                    <li>宋宇轩 --> 葛恒嘉</li>
+                                    <li>楼文颉 --> 王乐其</li>
+                                    <li>楼文颉 --> 王煜菲</li>
+                                    <li>侯思成 --> 陆朵朵</li>
+                                    <li>葛恒嘉 --> 姜一寻</li>
+                                    <li>郑筑轩 --> 方徐知</li>
+                                    <li>张津 --> 陈宣妤</li>
+                                    <li>张津 --> 李若宁</li>
+                                    <li>施展 --> 方晨曦</li>
+                                    <li>温伽睿 --> 张庭尔</li>
+                                    <li>倪哲晟 --> 陈辰</li>
+                                    <li>秦汉文 --> 于小格</li>
+                                    <li>赵虹昇 --> 葛恒嘉</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <section>
             <h2>版本 1.2.0 - <span class="date">2024-03-19</span></h2>
             <ul>
@@ -150,5 +309,7 @@
             </ul>
         </section>        
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
