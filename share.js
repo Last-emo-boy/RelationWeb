@@ -1,3 +1,5 @@
+// share.js
+
 function shareOnFacebook() {
     const pageUrl = encodeURIComponent(window.location.href);
     const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;

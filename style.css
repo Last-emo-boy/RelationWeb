@@ -1,140 +1,84 @@
+/* 全局样式 */
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f5f5f5;
-    margin: 0;
-    padding: 0;
-    align-items: center;
-    justify-content: start;
 }
-header {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 24px;
-    font-weight: 500;
-    color: #333;
-}
+
 #cy {
-    width: 90%; /* 默认宽度 */
-    /*max-width: 1200px; /* 最大宽度 */
-    margin: 20px auto; /* 上下间距和居中 */
     height: 70vh;
-}
-
-@media (min-width: 768px) {
-    .container {
-        width: 750px;
-    }
-}
-
-@media (min-width: 992px) {
-    .container {
-        width: 970px;
-    }
-}
-
-@media (min-width: 1200px) {
-    .container {
-        width: 1170px;
-    }
-}
- 
-#info {
-    margin-top: 20px;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    border-radius: 10px;
-    background-color: #fff;
-    font-size: 16px;
-    color: #333;
-    text-align: center; /* Center the text */
-}
-.centered-container {
-    display: flex; /* 使用Flexbox */
-    justify-content: center; /* 在主轴（默认为水平方向）上居中对齐 */
-    align-items: center; /* 在交叉轴（默认为垂直方向）上居中对齐 */
-    height: 8vh; /* 将容器的高度设置为视口的100%，确保按钮可以在视口中央显示 */
-    width: 100%; /* 确保容器宽度撑满整个视口宽度 */
-}
-
-.btn-info {
-    text-align: center; /* 确保文本在按钮内居中 */
-}
-
-/* Center the Toggle Search Box button */
-.toggle-search-box {
-    display: block; /* Make the button a block element to allow margin auto to work */
-    margin: 20px auto; /* Auto margins for horizontal centering */
-    background-color: #007bff; /* Bootstrap info button color */
-    color: white; /* Text color */
-}
-
-/* Existing styles for search box, inputs, and buttons */
-.search-box {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background: white;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    width: auto; /* Adjust based on content */
-}
-
-.search-box input,
-.search-box select,
-.search-box button {
-    margin: 5px 0;
-    padding: 8px;
-    width: auto; /* Allow default Bootstrap width */
-    box-sizing: border-box; /* Ensures padding doesn't affect overall width */
-}
-
-.search-box button {
-    background-color: #4CAF50; /* A green background */
-    color: white; /* White text color */
-    border: none; /* No borders */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer/hand icon */
-    font-size: 14px; /* Slightly smaller font size */
-}
-
-.search-box button:hover {
-    background-color: #45a049; /* Darker green background on hover */
-}
-
-.search-box select {
-    border: 1px solid #ccc; /* Light grey border */
-    border-radius: 4px; /* Rounded corners */
+    width: 100%;
+    border: 1px solid #ccc;
 }
 
 .social-share-buttons {
-    text-align: center;
-    padding: 20px;
+    margin-top: 20px;
 }
 
 .social-button {
-    margin: 0 10px;
-    color: #fff;
-    background-color: #555;
-    padding: 10px 20px;
-    border-radius: 20px;
+    margin: 5px;
     text-decoration: none;
+}
+
+.centered-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.legend {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.legend-node {
     display: inline-block;
-    transition: background-color 0.3s ease;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    vertical-align: middle;
 }
 
-.social-button i {
-    margin-right: 8px;
+.legend-node.male {
+    background-color: #1E90FF;
 }
 
-.social-button:hover {
-    opacity: 0.8;
+.legend-node.female {
+    background-color: #FF69B4;
 }
 
-/* Specific colors for each social media platform */
-.social-button:nth-child(1) { background-color: #3b5998; } /* Facebook */
-.social-button:nth-child(2) { background-color: #55acee; } /* Twitter */
-.social-button:nth-child(3) { background-color: #0077B5; } /* LinkedIn */
+.legend-edge {
+    display: inline-block;
+    width: 30px;
+    height: 2px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.legend-edge.ex-partner {
+    background-color: #FF6347;
+    border-bottom: 1px dashed #FF6347;
+}
+
+.legend-edge.current-partner {
+    background-color: #32CD32;
+}
+
+.legend-edge.affection {
+    background-color: #1E90FF;
+    border-bottom: 1px dotted #1E90FF;
+}
+
+.stats-panel {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+#info {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Toast 样式调整 */
+.toast {
+    min-width: 250px;
+}

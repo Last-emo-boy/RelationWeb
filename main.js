@@ -1,5 +1,6 @@
 // main.js
 
+// 导入必要的库（如果使用模块化，可以使用 import 语句）
 document.addEventListener('DOMContentLoaded', function(){
     const cy = cytoscape({
         container: document.getElementById('cy'),
@@ -44,19 +45,53 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             },
             {
-                selector: '[relationship = "EX_PARTNER"]',
+                selector: 'edge[relationship = "EX_PARTNER"]',
                 style: {
-                    'line-style': 'dashed'
+                    'line-style': 'dashed',
+                    'line-color': '#FF6347',
+                    'target-arrow-color': '#FF6347'
+                }
+            },
+            {
+                selector: 'edge[relationship = "CURRENT_PARTNER"]',
+                style: {
+                    'line-color': '#32CD32',
+                    'target-arrow-color': '#32CD32'
+                }
+            },
+            {
+                selector: 'edge[relationship = "AFFECTION"]',
+                style: {
+                    'line-style': 'dotted',
+                    'line-color': '#1E90FF',
+                    'target-arrow-color': '#1E90FF'
                 }
             },
             {
                 selector: '.highlighted',
                 style: {
-                    'background-color': '#ff0',
-                    'line-color': '#f00',
-                    'target-arrow-color': '#f00',
+                    'background-color': '#FFD700',
+                    'line-color': '#FFD700',
+                    'target-arrow-color': '#FFD700',
                     'transition-property': 'background-color, line-color, target-arrow-color',
                     'transition-duration': '0.5s'
+                }
+            },
+            {
+                selector: 'node.hover',
+                style: {
+                    'border-width': 6,
+                    'border-color': '#FFD700',
+                    'overlay-opacity': 0
+                }
+            },
+            {
+                selector: 'edge.hover',
+                style: {
+                    'width': 6,
+                    'line-color': '#FFD700',
+                    'target-arrow-color': '#FFD700',
+                    'overlay-opacity': 0
                 }
             }
         ],
@@ -83,11 +118,153 @@ document.addEventListener('DOMContentLoaded', function(){
             gravityCompound: 1.0,
             gravityRangeCompound: 1.5,
             nestingFactor: 0.1,
+        },
+        userZoomingEnabled: true,
+        userPanningEnabled: true,
+        boxSelectionEnabled: true
+    });
+
+    // 初始化 panzoom
+    cy.panzoom({
+        zoomFactor: 0.05,
+        minZoom: 0.1,
+        maxZoom: 10,
+        fitPadding: 50,
+        position: {
+            left: '10px',
+            top: '10px'
         }
     });
 
-    // 以下是交互逻辑和事件处理代码
-    // 查找最短路径
+    // 初始化 qTip 工具提示
+    cy.nodes().forEach(function(node) {
+        node.qtip({
+            content: function() {
+                return `
+                    <strong>${node.data('id')}</strong><br>
+                    性别: ${node.data('gender')}
+                `;
+            },
+            position: {
+                my: 'top center',
+                at: 'bottom center',
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+            },
+            show: {
+                solo: true,
+            },
+        });
+    });
+
+    cy.edges().forEach(function(edge) {
+        edge.qtip({
+            content: function() {
+                return `
+                    <strong>关系: ${edge.data('relationship')}</strong><br>
+                    来源: ${edge.data('source')}<br>
+                    目标: ${edge.data('target')}
+                `;
+            },
+            position: {
+                my: 'top center',
+                at: 'bottom center',
+            },
+            style: {
+                classes: 'qtip-dark',
+            },
+            show: {
+                solo: true,
+            },
+        });
+    });
+
+    // 添加节点和边的悬停高亮效果
+    cy.on('mouseover', 'node', function(event) {
+        var node = event.target;
+        node.addClass('hover');
+        node.connectedEdges().addClass('hover');
+    });
+
+    cy.on('mouseout', 'node', function(event) {
+        var node = event.target;
+        node.removeClass('hover');
+        node.connectedEdges().removeClass('hover');
+    });
+
+    cy.on('mouseover', 'edge', function(event) {
+        var edge = event.target;
+        edge.addClass('hover');
+    });
+
+    cy.on('mouseout', 'edge', function(event) {
+        var edge = event.target;
+        edge.removeClass('hover');
+    });
+
+    // 初始化上下文菜单
+    cy.contextMenus({
+        menuItems: [
+            {
+                id: 'details',
+                content: '查看详情',
+                tooltipText: '查看节点或边的详情',
+                selector: 'node, edge',
+                onClickFunction: function(event) {
+                    var target = event.target || event.cyTarget;
+                    if (target.isNode()) {
+                        showModalWithNodeDetails(target);
+                    } else if (target.isEdge()) {
+                        showModalWithEdgeDetails(target);
+                    }
+                },
+                hasTrailingDivider: true
+            },
+            {
+                id: 'highlight',
+                content: '高亮',
+                tooltipText: '高亮节点或边',
+                selector: 'node, edge',
+                onClickFunction: function(event) {
+                    var target = event.target || event.cyTarget;
+                    target.addClass('highlighted');
+                }
+            },
+            {
+                id: 'remove-highlight',
+                content: '取消高亮',
+                tooltipText: '取消高亮状态',
+                selector: 'node.highlighted, edge.highlighted',
+                onClickFunction: function(event) {
+                    var target = event.target || event.cyTarget;
+                    target.removeClass('highlighted');
+                }
+            }
+        ]
+    });
+
+    // 实现详情弹窗函数
+    function showModalWithNodeDetails(node) {
+        var content = `
+            <strong>${node.data('id')}</strong><br>
+            性别: ${node.data('gender')}
+        `;
+        $('#modalContent').html(content);
+        $('#detailsModal').modal('show');
+    }
+
+    function showModalWithEdgeDetails(edge) {
+        var content = `
+            <strong>关系: ${edge.data('relationship')}</strong><br>
+            来源: ${edge.data('source')}<br>
+            目标: ${edge.data('target')}
+        `;
+        $('#modalContent').html(content);
+        $('#detailsModal').modal('show');
+    }
+
+    // 查找最短路径功能
     document.getElementById('findPath').addEventListener('click', function() {
         const startId = document.getElementById('nodeA').value.trim();
         const endId = document.getElementById('nodeB').value.trim();
@@ -102,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
-    // 节点搜索
+    // 节点搜索功能
     document.getElementById('searchBtn').addEventListener('click', function() {
         var keyword = document.getElementById('searchInput').value.trim().toLowerCase();
         if (keyword) {
@@ -120,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
-    // 关系过滤
+    // 关系过滤功能
     document.getElementById('filterBtn').addEventListener('click', function() {
         var selectedRelationship = document.getElementById('relationshipFilter').value;
         if (selectedRelationship) {
@@ -136,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
-    // 重置视图
+    // 重置视图功能
     document.getElementById('resetBtn').addEventListener('click', function() {
         cy.elements().style('display', 'element');
     });
@@ -163,23 +340,6 @@ document.addEventListener('DOMContentLoaded', function(){
         document.body.removeChild(downloadLink);
     });
 
-    // 节点交互效果
-    cy.on('mouseover', 'node', function(event) {
-        event.target.animate({
-            style: { 'border-width': '2px', 'border-color': '#000', 'border-style': 'solid' }
-        }, {
-            duration: 200
-        });
-    });
-
-    cy.on('mouseout', 'node', function(event) {
-        event.target.animate({
-            style: { 'border-width': 0 }
-        }, {
-            duration: 200
-        });
-    });
-
     // 节点点击事件，显示信息
     cy.on('tap', 'node', function(evt) {
         var node = evt.target;
@@ -194,5 +354,69 @@ document.addEventListener('DOMContentLoaded', function(){
                         '<br>单向关系数 (AFFECTION): ' + affectionCount +
                         '<br>双向关系数 (EX_PARTNER, CURRENT_PARTNER等): ' + otherRelationshipsCount +
                         '<br>总关系数: ' + totalRelationships;
+    });
+
+    // 初始化自动完成功能
+    var nodeNames = cy.nodes().map(function(node) {
+        return node.data('id');
+    }).sort();
+
+    $(function() {
+        $("#searchInput").autocomplete({
+            source: nodeNames,
+            minLength: 1
+        });
+    });
+
+    // 更新统计信息
+    function updateStats() {
+        var totalNodes = cy.nodes().length;
+        var totalEdges = cy.edges().length;
+        var maleCount = cy.nodes('[gender = "男"]').length;
+        var femaleCount = cy.nodes('[gender = "女"]').length;
+
+        document.getElementById('stats').innerHTML = `
+          <p>总节点数: ${totalNodes}</p>
+          <p>总关系数: ${totalEdges}</p>
+          <p>男性: ${maleCount}</p>
+          <p>女性: ${femaleCount}</p>
+        `;
+    }
+
+    // 初始化时调用
+    updateStats();
+
+    // 添加键盘快捷键
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'f') { // 按 'f' 键适应视图
+            cy.fit();
+        } else if (event.key === 'r') { // 按 'r' 键重置视图
+            cy.reset();
+        } else if (event.key === 's') { // 按 's' 键保存图像
+            var png64 = cy.png();
+            var downloadLink = document.createElement('a');
+            downloadLink.href = png64;
+            downloadLink.download = 'graph.png';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    });
+
+    // 显示通知函数
+    function showNotification(message) {
+        $('#toastBody').text(message);
+        $('#notification').toast('show');
+    }
+
+    // 示例：在节点被选中时显示通知
+    cy.on('select', 'node', function(event) {
+        var node = event.target;
+        showNotification('选中节点: ' + node.data('id'));
+    });
+
+    // 切换搜索框显示
+    document.getElementById('toggleSearchBox').addEventListener('click', function() {
+        $('#searchBox').collapse('toggle');
     });
 });
