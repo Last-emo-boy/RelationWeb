@@ -229,6 +229,7 @@ var elementsData = [
 { data: { id: 'c36', source: '夏印荷', target: '沈天阔', relationship: 'CURRENT_PARTNER' } },
 { data: { id: 'c37', source: '段佩辰', target: '施与姚', relationship: 'CURRENT_PARTNER' } },
 { data: { id: 'c38', source: '施与姚', target: '段佩辰', relationship: 'CURRENT_PARTNER' } },
+{ data: { id: 'c39', source: '刘燕霖', target: '郑筑轩', relationship: 'CURRENT_PARTNER' } },
 
 { data: { id: 'a1', source: '周而成', target: '陈辰', relationship: 'AFFECTION' } },
 { data: { id: 'a2', source: '吴思涵', target: '陈昱桐', relationship: 'AFFECTION' } },
@@ -276,8 +277,8 @@ var elementsData = [
 // { data: { id: 'a44', source: '姚博文', target: '方馨', relationship: 'AFFECTION' } },
 { data: { id: 'a45', source: '肖景元', target: '刘君明', relationship: 'AFFECTION' } },
 { data: { id: 'a46', source: '吴弘宇', target: '张沁媛', relationship: 'AFFECTION' } },
-{ data: { id: 'a47', source: '郑筑轩', target: '刘燕霖', relationship: 'AFFECTION' } },
-{ data: { id: 'a48', source: '刘燕霖', target: '郑筑轩', relationship: 'AFFECTION' } },
+// { data: { id: 'a47', source: '郑筑轩', target: '刘燕霖', relationship: 'AFFECTION' } },
+// { data: { id: 'a48', source: '刘燕霖', target: '郑筑轩', relationship: 'AFFECTION' } },
 { data: { id: 'a49', source: '王思源', target: '方馨', relationship: 'AFFECTION' } },
 { data: { id: 'a50', source: '陆宜彬', target: '姚昕妤', relationship: 'AFFECTION' } },
 { data: { id: 'a51', source: '李晗之', target: '王煜菲', relationship: 'AFFECTION' } },
