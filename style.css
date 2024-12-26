@@ -1,84 +1,140 @@
+/* style.css */
+
 /* 全局样式 */
 body {
-    font-family: 'Roboto', sans-serif;
-}
-
-#cy {
-    height: 70vh;
-    width: 100%;
-    border: 1px solid #ccc;
-}
-
-.social-share-buttons {
-    margin-top: 20px;
-}
-
-.social-button {
-    margin: 5px;
-    text-decoration: none;
-}
-
-.centered-container {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.legend {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 20px;
-}
-
-.legend-node {
+    background-color: #fdfdfd;
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* 调整 container 的边距，配合 Bootstrap */
+  .container-fluid {
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+  /* 标题区样式 */
+  header h1 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* 让 legend 区域有些分割感 */
+  .legend {
+    background-color: #f8f9fa;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #dee2e6;
+  }
+  
+  .legend h5 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* 图例：节点颜色示例 */
+  .legend-node {
     display: inline-block;
-    width: 15px;
-    height: 15px;
-    margin-right: 5px;
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+    border-radius: 50%;
     vertical-align: middle;
-}
-
-.legend-node.male {
-    background-color: #1E90FF;
-}
-
-.legend-node.female {
-    background-color: #FF69B4;
-}
-
-.legend-edge {
+  }
+  
+  .legend-node.male {
+    background-color: #1E90FF; /* 男性 */
+  }
+  
+  .legend-node.female {
+    background-color: #FF69B4; /* 女性 */
+  }
+  
+  /* 图例：边颜色示例 */
+  .legend-edge {
     display: inline-block;
-    width: 30px;
-    height: 2px;
-    margin-right: 5px;
+    width: 40px;
+    height: 4px;
+    margin-right: 0.5rem;
     vertical-align: middle;
-}
-
-.legend-edge.ex-partner {
-    background-color: #FF6347;
-    border-bottom: 1px dashed #FF6347;
-}
-
-.legend-edge.current-partner {
-    background-color: #32CD32;
-}
-
-.legend-edge.affection {
-    background-color: #1E90FF;
-    border-bottom: 1px dotted #1E90FF;
-}
-
-.stats-panel {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-top: 20px;
-}
-
-#info {
-    font-size: 14px;
+    background-color: #ccc;
+  }
+  
+  .legend-edge.ex-partner {
+    border-bottom: 2px dashed #FF6347; /* 前任, dashed */
+    background-color: transparent;
+  }
+  
+  .legend-edge.current-partner {
+    background-color: #32CD32; /* 现任 */
+  }
+  
+  .legend-edge.affection {
+    border-bottom: 2px dotted #1E90FF; /* 好感, dotted */
+    background-color: transparent;
+  }
+  
+  /* 图表区域卡片 */
+  .card {
+    border: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* 节点信息区域 */
+  #info {
+    font-size: 1rem;
     line-height: 1.5;
-}
-
-/* Toast 样式调整 */
-.toast {
-    min-width: 250px;
-}
+  }
+  
+  /* 居中容器，可用于按钮等 */
+  .centered-container {
+    text-align: center;
+  }
+  
+  /* 折叠面板的样式(搜索框) */
+  #searchBox {
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+  }
+  
+  /* stats-panel 统计信息 */
+  .stats-panel p {
+    margin: 0.3rem 0;
+  }
+  
+  /* Toast 样式 (Bootstrap 已有基础样式，这里可酌情调整) */
+  .toast {
+    min-width: 200px;
+  }
+  
+  /* 社交分享按钮示例 */
+  .social-share-buttons {
+    margin-top: 1rem;
+  }
+  
+  .social-button {
+    display: inline-block;
+    margin: 0 0.5rem;
+    color: #fff;
+    background-color: #007bff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    text-decoration: none;
+  }
+  
+  .social-button:hover {
+    opacity: 0.85;
+    text-decoration: none;
+  }
+  
+  /* Dark mode 示例：与 main.js 中的 dark-mode 代码相呼应 */
+  body.dark-theme {
+    background-color: #333;
+    color: #eee;
+  }
+  
+  /* 其他可根据需要自定义... */
+  
