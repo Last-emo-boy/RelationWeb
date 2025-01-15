@@ -214,6 +214,8 @@ var elementsData = [
 { data: { id: 'e81', source: '葛语歆', target: '杨佳选', relationship: 'EX_PARTNER' } },
 { data: { id: 'e82', source: '杨佳选', target: '林嘉懿', relationship: 'EX_PARTNER' } },
 { data: { id: 'e83', source: '林嘉懿', target: '杨佳选', relationship: 'EX_PARTNER' } },
+{ data: { id: 'e84', source: '黄师然', target: '陈宣妤', relationship: 'CURRENT_PARTNER' } },
+{ data: { id: 'e85', source: '陈宣妤', target: '黄师然', relationship: 'CURRENT_PARTNER' } },
 
 
 // { data: { id: 'c1', source: '沈天阔', target: '夏印荷', relationship: 'CURRENT_PARTNER' } },
@@ -267,6 +269,8 @@ var elementsData = [
 { data: { id: 'c49', source: '陈宝仪', target: '陈昱桐', relationship: 'CURRENT_PARTNER' } },
 { data: { id: 'c50', source: '朱易琳', target: '张津', relationship: 'CURRENT_PARTNER' } },
 { data: { id: 'c51', source: '张津', target: '朱易琳', relationship: 'CURRENT_PARTNER' } },
+{ data: { id: 'c50', source: '葛恒嘉', target: '王思源', relationship: 'CURRENT_PARTNER' } },
+{ data: { id: 'c51', source: '王思源', target: '葛恒嘉', relationship: 'CURRENT_PARTNER' } },
 
 { data: { id: 'a1', source: '周而成', target: '陈辰', relationship: 'AFFECTION' } },
 { data: { id: 'a2', source: '吴思涵', target: '陈昱桐', relationship: 'AFFECTION' } },
@@ -324,5 +328,6 @@ var elementsData = [
 { data: { id: 'a54', source: '钱程浩', target: '王乐其', relationship: 'AFFECTION' } },
 { data: { id: 'a55', source: '张耀天', target: '王乐其', relationship: 'AFFECTION' } },
 { data: { id: 'a56', source: '袁成禹', target: '张庭尔', relationship: 'AFFECTION' } },
+{ data: { id: 'a57', source: '张扬婧', target: '王则元', relationship: 'AFFECTION' } },
 
 ];
