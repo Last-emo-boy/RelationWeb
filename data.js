@@ -265,6 +265,8 @@ var elementsData = [
 { data: { id: 'c47', source: '钱若瑜', target: '袁成禹', relationship: 'CURRENT_PARTNER' } },
 { data: { id: 'c48', source: '陈昱桐', target: '陈宝仪', relationship: 'CURRENT_PARTNER' } },
 { data: { id: 'c49', source: '陈宝仪', target: '陈昱桐', relationship: 'CURRENT_PARTNER' } },
+{ data: { id: 'c50', source: '朱易琳', target: '张津', relationship: 'CURRENT_PARTNER' } },
+{ data: { id: 'c51', source: '张津', target: '朱易琳', relationship: 'CURRENT_PARTNER' } },
 
 { data: { id: 'a1', source: '周而成', target: '陈辰', relationship: 'AFFECTION' } },
 { data: { id: 'a2', source: '吴思涵', target: '陈昱桐', relationship: 'AFFECTION' } },
