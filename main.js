@@ -383,9 +383,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // 10. 重置视图功能
     // ===============================
     document.getElementById('resetBtn').addEventListener('click', () => {
-      // 显示所有元素
-      cy.elements().style('display', 'element');
-    });
+        cy.elements().style('display', 'element');
+        
+        // 重新运行布局（以 cose-bilkent 为例）
+        cy.layout({
+          name: 'cose-bilkent',
+          // 其他 layout 参数与初始保持一致即可
+          fit: false  // 先不自动fit, 我们会手动再调用 cy.fit()
+        }).run();
+        
+        // 结束后，再自适应视口
+        cy.once('layoutstop', () => {
+          cy.fit();
+        });
+      });
+      
   
     // ===============================
     // 11. 导出图片功能
