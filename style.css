@@ -15,16 +15,14 @@ body {
   color: var(--main-text-color);
   margin: 0;
   padding: 0;
-  font-family: 'Roboto', sans-serif;
-  /* 添加过渡效果，主题切换时平滑 */
-  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: 'Roboto', sans-serif; /* 也可以换成你喜欢的字体 */
 }
 
 /* 调整 container 的边距，配合 Bootstrap */
 .container-fluid {
   max-width: 1200px;
   margin: auto;
-  padding: 1rem;
+  padding: 1rem; /* 在最外层再增加一点padding */
 }
 
 /* 标题区样式 */
@@ -33,8 +31,6 @@ header h1 {
   font-weight: 500;
   margin-bottom: 0.5rem;
   letter-spacing: 1px;
-  /* 加一个入场动画，若未使用Animate.css可保留此keyframes或删除 */
-  animation: fadeInDown 1s both;
 }
 
 /* 让 legend 区域有些分割感 */
@@ -99,10 +95,6 @@ header h1 {
   margin-bottom: 1rem;
   border-radius: 0.25rem;
   background-color: var(--card-bg-color);
-  /* 若使用 AOS，滚动触发时可出现动画 */
-  [data-aos] {
-    overflow: hidden; /* 让动画更干净 */
-  }
 }
 .card-body {
   padding: 1rem 1.5rem;
@@ -113,7 +105,6 @@ header h1 {
   font-size: 1rem;
   line-height: 1.5;
   margin-bottom: 1rem;
-  animation: fadeIn 0.8s ease-in-out;
 }
 
 /* 居中容器，可用于按钮等 */
@@ -132,8 +123,8 @@ header h1 {
   padding: 1rem;
 }
 
-/* stats 统计信息 */
-#stats p {
+/* stats-panel 统计信息 */
+.stats-panel p {
   margin: 0.3rem 0;
   font-size: 0.95rem;
 }
@@ -202,22 +193,3 @@ body.dark-theme .social-button:hover {
   opacity: 0.8;
 }
 
-/* 关键帧动画（仅供参考或自行调整） */
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes fadeInDown {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}

@@ -391,8 +391,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===============================
   // 11. 导出图片功能
   // ===============================
-  const exportImage = format => {
-    const dataUrl = format === 'jpg' ? cy.jpg() : cy.png();
+  const exportImage = (format) => {
+    let dataUrl;
+    if (format === 'jpg') {
+      dataUrl = cy.jpg({
+        scale: 5,   // 可根据需要调大或调小
+        full: true,
+        bg: 'white' // 背景色可以自定义
+      });
+    } else {
+      dataUrl = cy.png({
+        scale: 5,
+        full: true,
+        bg: 'white'
+      });
+    }
+  
     const downloadLink = document.createElement('a');
     downloadLink.href = dataUrl;
     downloadLink.download = `graph.${format}`;
@@ -400,12 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadLink.click();
     document.body.removeChild(downloadLink);
   };
-  document.getElementById('exportPng').addEventListener('click', () => {
-    exportImage('png');
-  });
-  document.getElementById('exportJpg').addEventListener('click', () => {
-    exportImage('jpg');
-  });
+  
 
   // ===============================
   // 12. 节点点击事件：显示节点信息

@@ -1,0 +1,30 @@
+# 忽略 node_modules 目录
+node_modules/
+
+# 忽略日志文件
+*.log
+
+# 忽略临时文件和目录
+tmp/
+temp/
+build/
+dist/
+
+# 忽略编辑器和 IDE 配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 忽略构建工具生成的日志文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 忽略环境配置文件
+.env
+.senv
+
+# 忽略操作系统生成的文件
+.DS_Store
+Thumbs.db
