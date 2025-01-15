@@ -1,140 +1,195 @@
-/* style.css */
-
 /* 全局样式 */
+:root {
+  /* 可在此定义一些CSS变量，方便全局配色、字体大小等管理 */
+  --main-bg-color: #fdfdfd;
+  --main-text-color: #333;
+  --card-bg-color: #ffffff;
+  --border-color: #dee2e6;
+  --legend-bg-color: #f8f9fa;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --hover-opacity: 0.85;
+}
+
 body {
-    background-color: #fdfdfd;
-    color: #333;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* 调整 container 的边距，配合 Bootstrap */
-  .container-fluid {
-    max-width: 1200px;
-    margin: auto;
-  }
-  
-  /* 标题区样式 */
-  header h1 {
-    font-size: 2.5rem;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-  
-  /* 让 legend 区域有些分割感 */
-  .legend {
-    background-color: #f8f9fa;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    border-radius: 0.25rem;
-    border: 1px solid #dee2e6;
-  }
-  
-  .legend h5 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-  }
-  
-  /* 图例：节点颜色示例 */
-  .legend-node {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    margin-right: 0.5rem;
-    border-radius: 50%;
-    vertical-align: middle;
-  }
-  
-  .legend-node.male {
-    background-color: #1E90FF; /* 男性 */
-  }
-  
-  .legend-node.female {
-    background-color: #FF69B4; /* 女性 */
-  }
-  
-  /* 图例：边颜色示例 */
-  .legend-edge {
-    display: inline-block;
-    width: 40px;
-    height: 4px;
-    margin-right: 0.5rem;
-    vertical-align: middle;
-    background-color: #ccc;
-  }
-  
-  .legend-edge.ex-partner {
-    border-bottom: 2px dashed #FF6347; /* 前任, dashed */
-    background-color: transparent;
-  }
-  
-  .legend-edge.current-partner {
-    background-color: #32CD32; /* 现任 */
-  }
-  
-  .legend-edge.affection {
-    border-bottom: 2px dotted #1E90FF; /* 好感, dotted */
-    background-color: transparent;
-  }
-  
-  /* 图表区域卡片 */
-  .card {
-    border: none;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  }
-  
-  /* 节点信息区域 */
-  #info {
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-  
-  /* 居中容器，可用于按钮等 */
-  .centered-container {
-    text-align: center;
-  }
-  
-  /* 折叠面板的样式(搜索框) */
-  #searchBox {
-    background-color: #fafafa;
-    border: 1px solid #ddd;
-  }
-  
-  /* stats-panel 统计信息 */
-  .stats-panel p {
-    margin: 0.3rem 0;
-  }
-  
-  /* Toast 样式 (Bootstrap 已有基础样式，这里可酌情调整) */
-  .toast {
-    min-width: 200px;
-  }
-  
-  /* 社交分享按钮示例 */
-  .social-share-buttons {
-    margin-top: 1rem;
-  }
-  
-  .social-button {
-    display: inline-block;
-    margin: 0 0.5rem;
-    color: #fff;
-    background-color: #007bff;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    text-decoration: none;
-  }
-  
-  .social-button:hover {
-    opacity: 0.85;
-    text-decoration: none;
-  }
-  
-  /* Dark mode 示例：与 main.js 中的 dark-mode 代码相呼应 */
-  body.dark-theme {
-    background-color: #333;
-    color: #eee;
-  }
-  
-  /* 其他可根据需要自定义... */
-  
+  background-color: var(--main-bg-color);
+  color: var(--main-text-color);
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif; /* 也可以换成你喜欢的字体 */
+}
+
+/* 调整 container 的边距，配合 Bootstrap */
+.container-fluid {
+  max-width: 1200px;
+  margin: auto;
+  padding: 1rem; /* 在最外层再增加一点padding */
+}
+
+/* 标题区样式 */
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+/* 让 legend 区域有些分割感 */
+.legend {
+  background-color: var(--legend-bg-color);
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
+  line-height: 1.5;
+}
+.legend h5 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* 图例：节点颜色示例 */
+.legend-node {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  vertical-align: middle;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+}
+.legend-node.male {
+  background-color: #1E90FF; /* 男性 */
+}
+.legend-node.female {
+  background-color: #FF69B4; /* 女性 */
+}
+
+/* 图例：边颜色示例 */
+.legend-edge {
+  display: inline-block;
+  width: 40px;
+  height: 4px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  background-color: #ccc;
+  border-radius: 2px;
+}
+.legend-edge.ex-partner {
+  border-bottom: 2px dashed #FF6347; /* 前任, dashed */
+  background-color: transparent;
+}
+.legend-edge.current-partner {
+  background-color: #32CD32; /* 现任 */
+}
+.legend-edge.affection {
+  border-bottom: 2px dotted #1E90FF; /* 好感, dotted */
+  background-color: transparent;
+}
+
+/* 图表区域卡片 */
+.card {
+  border: none;
+  box-shadow: 0 0 10px var(--shadow-color);
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+  background-color: var(--card-bg-color);
+}
+.card-body {
+  padding: 1rem 1.5rem;
+}
+
+/* 节点信息区域 */
+#info {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+/* 居中容器，可用于按钮等 */
+.centered-container {
+  text-align: center;
+}
+
+/* 折叠面板的样式(搜索框) */
+#searchBox {
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+#searchBox .card-body {
+  padding: 1rem;
+}
+
+/* stats-panel 统计信息 */
+.stats-panel p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+}
+
+/* Toast 样式 (Bootstrap 已有基础样式，这里可酌情调整) */
+.toast {
+  min-width: 220px;
+  border-radius: 0.25rem;
+}
+
+/* 社交分享按钮示例 */
+.social-share-buttons {
+  margin-top: 1rem;
+}
+.social-button {
+  display: inline-block;
+  margin: 0 0.5rem;
+  color: #fff;
+  background-color: #007bff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  transition: opacity 0.2s ease-in-out;
+}
+.social-button:hover {
+  opacity: var(--hover-opacity);
+  text-decoration: none;
+}
+
+/* 一些按钮的细节微调 */
+.btn {
+  transition: opacity 0.2s ease-in-out, box-shadow 0.2s;
+}
+.btn:hover {
+  opacity: 0.9;
+  text-decoration: none;
+}
+.btn:focus,
+.btn:active {
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* Dark mode 示例：与 main.js 中的 dark-mode 代码相呼应 */
+body.dark-theme {
+  background-color: #333;
+  color: #eee;
+}
+body.dark-theme .card {
+  background-color: #444;
+  border: none;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+body.dark-theme .legend {
+  background-color: #555;
+  border: 1px solid #666;
+}
+body.dark-theme .toast {
+  background-color: #555;
+  color: #eee;
+}
+body.dark-theme .social-button {
+  background-color: #444;
+}
+body.dark-theme .social-button:hover {
+  opacity: 0.8;
+}
+

@@ -10,10 +10,10 @@
   />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- 引入外部CSS -->
+  <!-- 自定义CSS 或者外部样式文件 -->
   <link href="style.css" rel="stylesheet" />
 
-  <!-- 引入字体和图标（可根据需要修改） -->
+  <!-- 字体和图标 (可根据需要选择其他版本) -->
   <link
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
     rel="stylesheet"
@@ -23,7 +23,7 @@
     rel="stylesheet"
   />
 
-  <!-- 引入Bootstrap CSS -->
+  <!-- Bootstrap CSS -->
   <link
     href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     rel="stylesheet"
@@ -31,7 +31,7 @@
 
   <!-- Cytoscape.js 核心库 -->
   <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
-  <!-- Cytoscape 布局插件 -->
+  <!-- Cytoscape 布局插件 (cose-bilkent) -->
   <script src="https://unpkg.com/layout-base/layout-base.js"></script>
   <script src="https://unpkg.com/cose-base/cose-base.js"></script>
   <script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
@@ -61,11 +61,74 @@
     href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
   />
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  <!-- 引入 Fuse.js（用于模糊搜索）-->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
+
+  <style>
+    /* 你可以根据需求在这里或 style.css 进行更细致的美化 */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f5f5f5;
+    }
+    .legend {
+      font-size: 0.9rem;
+    }
+    .legend-node {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+      border-radius: 50%;
+      vertical-align: middle;
+    }
+    .male {
+      background-color: #1E90FF;
+    }
+    .female {
+      background-color: #FF69B4;
+    }
+    .legend-edge {
+      display: inline-block;
+      width: 30px;
+      height: 3px;
+      margin-right: 6px;
+      vertical-align: middle;
+      background-color: #999;
+    }
+    .ex-partner {
+      border-bottom: 2px dashed #FF6347;
+      background: none;
+    }
+    .current-partner {
+      background-color: #32CD32;
+    }
+    .affection {
+      border-bottom: 2px dotted #1E90FF;
+      background: none;
+    }
+    .centered-container {
+      text-align: center;
+    }
+    #cy {
+      width: 100%;
+      height: 600px;
+      background-color: #fff; /* 给 cytoscape 画布一个白底 */
+      border: 1px solid #ddd;
+    }
+    /* 面板卡片的简单美化 */
+    .panel-card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 
-<body style="font-family: 'Roboto', sans-serif;">
-  <div class="container-fluid mt-5">
-    <!-- 页面内容 -->
+<body>
+  <div class="container-fluid mt-4">
     <div class="row justify-content-center">
       <div class="col-lg-10 col-xl-8">
         <!-- 标题和链接 -->
@@ -76,20 +139,30 @@
           >
         </header>
 
-        <!-- 图例 -->
-        <div id="legend" class="legend mb-3">
-          <h5>图例</h5>
-          <div><span class="legend-node male"></span> 男性</div>
-          <div><span class="legend-node female"></span> 女性</div>
-          <div><span class="legend-edge ex-partner"></span> 前任</div>
-          <div><span class="legend-edge current-partner"></span> 现任</div>
-          <div><span class="legend-edge affection"></span> 单向好感</div>
+        <!-- 图例和主题切换等小面板 -->
+        <div class="card mb-3">
+          <div class="card-body d-flex flex-column flex-sm-row justify-content-between">
+            <div id="legend" class="legend">
+              <h5>图例</h5>
+              <div><span class="legend-node male"></span> 男性</div>
+              <div><span class="legend-node female"></span> 女性</div>
+              <div><span class="legend-edge ex-partner"></span> 前任</div>
+              <div><span class="legend-edge current-partner"></span> 现任</div>
+              <div><span class="legend-edge affection"></span> 单向好感</div>
+            </div>
+            <!-- 主题切换按钮 (可选) -->
+            <div class="align-self-end">
+              <button id="themeToggleBtn" class="btn btn-secondary">
+                切换主题
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Graph 画布区域 -->
         <div class="card mb-4">
           <div class="card-body">
-            <div id="cy" style="width: 100%; height: 600px;"></div>
+            <div id="cy"></div>
           </div>
         </div>
 
@@ -99,9 +172,9 @@
         </div>
 
         <!-- 切换搜索框按钮 -->
-        <div class="centered-container">
+        <div class="centered-container mb-3">
           <button
-            class="btn btn-info mb-2"
+            class="btn btn-info"
             id="toggleSearchBox"
             type="button"
             data-toggle="collapse"
@@ -115,57 +188,147 @@
 
         <!-- 搜索与过滤面板 -->
         <div class="collapse" id="searchBox">
-          <div class="card card-body mb-4">
+          <div class="card card-body mb-3">
+            <h5 class="mb-3">搜索与过滤</h5>
             <!-- 查找最短路径 -->
-            <input
-              type="text"
-              id="nodeA"
-              class="form-control mb-2"
-              placeholder="Start node ID"
-            />
-            <input
-              type="text"
-              id="nodeB"
-              class="form-control mb-2"
-              placeholder="End node ID"
-            />
-            <button id="findPath" class="btn btn-primary mb-2">Find Path</button>
+            <div class="form-inline mb-2">
+              <input
+                type="text"
+                id="nodeA"
+                class="form-control mr-2"
+                placeholder="Start node ID"
+              />
+              <input
+                type="text"
+                id="nodeB"
+                class="form-control mr-2"
+                placeholder="End node ID"
+              />
+              <button id="findPath" class="btn btn-primary">
+                Find Path
+              </button>
+            </div>
 
-            <!-- 节点搜索 -->
-            <input
-              type="text"
-              id="searchInput"
-              class="form-control mb-2"
-              placeholder="Search node by keyword"
-            />
-            <button id="searchBtn" class="btn btn-secondary mb-2">
-              Search
-            </button>
+            <!-- 实时搜索(模糊搜索) -->
+            <div class="form-group">
+              <label for="searchInput">模糊搜索节点 (ID)</label>
+              <input
+                type="text"
+                id="searchInput"
+                class="form-control"
+                placeholder="Type to search (fuzzy)"
+              />
+            </div>
 
             <!-- 关系过滤 -->
-            <select id="relationshipFilter" class="form-control mb-2">
-              <option value="">Select Relationship Type</option>
-              <option value="current_partner">Current Partner</option>
-              <option value="ex_partner">Ex Partner</option>
-              <option value="affection">Affection</option>
-            </select>
-            <button id="filterBtn" class="btn btn-info mb-2">Apply Filter</button>
+            <div class="form-group">
+              <label for="relationshipFilter">关系过滤</label>
+              <select id="relationshipFilter" class="form-control">
+                <option value="">Select Relationship Type</option>
+                <option value="current_partner">Current Partner</option>
+                <option value="ex_partner">Ex Partner</option>
+                <option value="affection">Affection</option>
+              </select>
+            </div>
+            <button id="filterBtn" class="btn btn-info mb-2">
+              Apply Filter
+            </button>
 
             <!-- 重置视图 -->
-            <button id="resetBtn" class="btn btn-warning mb-2">Reset View</button>
+            <button id="resetBtn" class="btn btn-warning mb-2">
+              Reset View
+            </button>
 
             <!-- 导出图片 -->
-            <button id="exportPng" class="btn btn-success mb-2">
-              Export as PNG
+            <div class="d-inline-block ml-2">
+              <button id="exportPng" class="btn btn-success mb-2">
+                Export as PNG
+              </button>
+              <button id="exportJpg" class="btn btn-success mb-2">
+                Export as JPG
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 扩展功能区：添加节点、添加边、编辑元素、布局切换、版本切换、社区检测示例等 -->
+        <div class="card card-body mb-3">
+          <h5 class="mb-3">扩展功能 (示例)</h5>
+
+          <div class="btn-group mb-3" role="group" aria-label="Add/Edit">
+            <!-- 动态增删 + 编辑 -->
+            <button id="addNodeBtn" class="btn btn-sm btn-outline-primary">
+              添加节点
             </button>
-            <button id="exportJpg" class="btn btn-success mb-2">
-              Export as JPG
+            <button id="addEdgeBtn" class="btn btn-sm btn-outline-primary">
+              添加边
+            </button>
+            <button id="editElementBtn" class="btn btn-sm btn-outline-secondary">
+              编辑选中元素
+            </button>
+          </div>
+
+          <!-- 布局切换 -->
+          <div class="form-group">
+            <label for="layoutSelect">布局切换</label>
+            <select id="layoutSelect" class="form-control">
+              <option value="cose-bilkent" selected>cose-bilkent</option>
+              <option value="grid">grid</option>
+              <option value="circle">circle</option>
+              <option value="concentric">concentric</option>
+              <option value="breadthfirst">breadthfirst</option>
+              <option value="random">random</option>
+            </select>
+          </div>
+
+          <!-- 版本 / 时间切换示例 -->
+          <div class="form-group">
+            <label for="versionSelect">版本 / 时间切换（示例）</label>
+            <select id="versionSelect" class="form-control">
+              <option value="">请选择版本</option>
+              <option value="v1">版本1</option>
+              <option value="v2">版本2</option>
+            </select>
+          </div>
+
+          <!-- 社区检测 & 高级查询按钮 -->
+          <div class="btn-group mb-3" role="group" aria-label="Advanced">
+            <button
+              id="detectCommunityBtn"
+              class="btn btn-sm btn-outline-warning"
+            >
+              社区检测（示例）
+            </button>
+            <button
+              id="advancedQueryBtn"
+              class="btn btn-sm btn-outline-dark"
+            >
+              高级查询示例
+            </button>
+          </div>
+
+          <!-- 导入 / 导出 JSON -->
+          <div class="form-group">
+            <label for="importJsonFile">导入 JSON 文件</label>
+            <input
+              id="importJsonFile"
+              type="file"
+              accept=".json"
+              class="form-control-file"
+            />
+          </div>
+          <div class="btn-group mb-2" role="group" aria-label="Import/Export">
+            <button id="importJsonBtn" class="btn btn-sm btn-outline-info">
+              导入 JSON
+            </button>
+            <button id="exportJsonBtn" class="btn btn-sm btn-outline-success">
+              导出 JSON
             </button>
           </div>
         </div>
 
         <!-- 评论区（基于 utteranc.es） -->
-        <div class="utterances-comments">
+        <div class="utterances-comments mb-4">
           <script
             src="https://utteranc.es/client.js"
             repo="Last-emo-boy/RelationWeb"
@@ -176,22 +339,26 @@
           ></script>
         </div>
 
-        <!-- 社交分享按钮 (可在 share.js 中定义相应的函数) -->
-        <div class="social-share-buttons text-center mt-4">
-          <a href="#" onclick="shareOnFacebook()" class="social-button">
+        <!-- 社交分享按钮 (可在 share.js 中定义相关函数) -->
+        <div class="social-share-buttons text-center mb-4">
+          <a href="#" onclick="shareOnFacebook()" class="btn btn-sm btn-primary">
             <i class="fab fa-facebook-f"></i> Share on Facebook
           </a>
-          <a href="#" onclick="shareOnTwitter()" class="social-button">
+          <a href="#" onclick="shareOnTwitter()" class="btn btn-sm btn-info">
             <i class="fab fa-twitter"></i> Share on Twitter
           </a>
-          <a href="#" onclick="shareOnLinkedIn()" class="social-button">
+          <a href="#" onclick="shareOnLinkedIn()" class="btn btn-sm btn-success">
             <i class="fab fa-linkedin-in"></i> Share on LinkedIn
           </a>
         </div>
 
         <!-- 统计信息显示区 -->
-        <div id="stats" class="stats-panel mt-4">
+        <div id="stats" class="card card-body">
           <!-- 动态更新统计信息 -->
+          <p>总节点数: 0</p>
+          <p>总关系数: 0</p>
+          <p>男性: 0</p>
+          <p>女性: 0</p>
         </div>
 
         <!-- 详情模态框 -->
@@ -219,7 +386,11 @@
                 <!-- 动态填充内容 -->
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                >
                   关闭
                 </button>
               </div>
@@ -261,12 +432,12 @@
     </div>
   </div>
 
-  <!-- 引入自定义数据、主逻辑脚本、以及分享逻辑 -->
+  <!-- 引入数据文件 (elementsData), 主逻辑, 以及分享逻辑 -->
   <script src="data.js"></script>
   <script src="main.js"></script>
   <script src="share.js"></script>
 
-  <!-- 引入 Bootstrap 和 Popper.js (用于模态框、Toast 等) -->
+  <!-- Bootstrap 与 Popper.js (用于模态框、Toast 等) -->
   <script
     src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
   ></script>
