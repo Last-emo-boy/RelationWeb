@@ -196,8 +196,8 @@ var elementsData = [
 { data: { id: 'e63', source: '张艺霏', target: '袁成禹', relationship: 'EX_PARTNER' } },
 // { data: { id: 'e64', source: '沈天阔', target: '夏印荷', relationship: 'EX_PARTNER' } },
 // { data: { id: 'e65', source: '夏印荷', target: '沈天阔', relationship: 'EX_PARTNER' } },
-{ data: { id: 'e66', source: '陈辰', target: '毕文凯', relationship: 'EX_PARTNER' } },
-{ data: { id: 'e67', source: '毕文凯', target: '陈辰', relationship: 'EX_PARTNER' } },
+// { data: { id: 'e66', source: '陈辰', target: '毕文凯', relationship: 'EX_PARTNER' } },
+// { data: { id: 'e67', source: '毕文凯', target: '陈辰', relationship: 'EX_PARTNER' } },
 { data: { id: 'e68', source: '施与姚', target: '段佩辰', relationship: 'EX_PARTNER' } },
 { data: { id: 'e69', source: '段佩辰', target: '施与姚', relationship: 'EX_PARTNER' } },
 { data: { id: 'e70', source: '江潼恩', target: '吴瑞麟', relationship: 'EX_PARTNER' } },
@@ -214,8 +214,8 @@ var elementsData = [
 { data: { id: 'e81', source: '葛语歆', target: '杨佳选', relationship: 'EX_PARTNER' } },
 { data: { id: 'e82', source: '杨佳选', target: '林嘉懿', relationship: 'EX_PARTNER' } },
 { data: { id: 'e83', source: '林嘉懿', target: '杨佳选', relationship: 'EX_PARTNER' } },
-{ data: { id: 'e84', source: '黄师然', target: '陈宣妤', relationship: 'CURRENT_PARTNER' } },
-{ data: { id: 'e85', source: '陈宣妤', target: '黄师然', relationship: 'CURRENT_PARTNER' } },
+{ data: { id: 'e84', source: '黄师然', target: '陈宣妤', relationship: 'EX_PARTNER' } },
+{ data: { id: 'e85', source: '陈宣妤', target: '黄师然', relationship: 'EX_PARTNER' } },
 
 
 // { data: { id: 'c1', source: '沈天阔', target: '夏印荷', relationship: 'CURRENT_PARTNER' } },
