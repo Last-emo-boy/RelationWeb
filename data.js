@@ -295,7 +295,7 @@ var elementsData = [
 { data: { id: 'a21', source: '楼文颉', target: '王煜菲', relationship: 'AFFECTION' } },
 { data: { id: 'a22', source: '侯思成', target: '陆朵朵', relationship: 'AFFECTION' } },
 { data: { id: 'a23', source: '葛恒嘉', target: '姜一寻', relationship: 'AFFECTION' } },
-{ data: { id: 'a24', source: '郑筑轩', target: '方徐知', relationship: 'AFFECTION' } },
+// { data: { id: 'a24', source: '郑筑轩', target: '方徐知', relationship: 'AFFECTION' } },
 { data: { id: 'a25', source: '张津', target: '陈宣妤', relationship: 'AFFECTION' } },
 { data: { id: 'a26', source: '张津', target: '李若宁', relationship: 'AFFECTION' } },
 { data: { id: 'a27', source: '施展', target: '方晨曦', relationship: 'AFFECTION' } },
