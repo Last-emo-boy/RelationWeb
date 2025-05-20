@@ -8,10 +8,10 @@
     name="description"
     content="Discover and explore the complex web of relationships with Love Graph. Visualize connections, find paths, and search for nodes based on relationship types."
   />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- 自定义CSS 或者外部样式文件 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <!-- 自定义CSS 或者外部样式文件 -->
   <link href="style.css" rel="stylesheet" />
+  <link href="festival_styles.css" rel="stylesheet" />
+  <link href="animation_styles.css" rel="stylesheet" />
 
   <!-- 字体和图标 (可根据需要选择其他版本) -->
   <link
@@ -291,13 +291,23 @@
             </select>
           </div>
 
-          <!-- 版本 / 时间切换示例 -->
-          <div class="form-group">
+          <!-- 版本 / 时间切换示例 -->        <div class="form-group">
             <label for="versionSelect">版本 / 时间切换（示例）</label>
             <select id="versionSelect" class="form-control">
               <option value="">请选择版本</option>
               <option value="v1">版本1</option>
               <option value="v2">版本2</option>
+            </select>
+          </div>
+          
+          <!-- 节日彩蛋测试 -->
+          <div class="form-group">
+            <label for="festivalSelect">节日彩蛋预览</label>
+            <select id="festivalSelect" class="form-control">
+              <option value="">选择节日彩蛋</option>
+              <option value="520">520表白日</option>
+              <option value="qixi">七夕节</option>
+              <option value="valentine">情人节</option>
             </select>
           </div>
 
@@ -440,10 +450,10 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- 引入数据文件 (elementsData), 主逻辑, 以及分享逻辑 -->
+  </div>  <!-- 引入数据文件 (elementsData), 主逻辑, 以及分享逻辑 -->
   <script src="data.js"></script>
+  <script src="festival_redirect.js"></script>
+  <script src="easter_eggs.js"></script>
   <script src="main.js"></script>
   <script src="share.js"></script>
 

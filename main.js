@@ -1,9 +1,16 @@
+// 全局共享函数，用于在节日彩蛋中显示通知
+window.showNotification = (message) => {
+  $('#toastBody').text(message);
+  $('#notification').toast('show');
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   // ===============================
   // 1. 初始化 Cytoscape
   // ===============================
   let currentTheme = 'light'; // 若需要主题切换，可留此变量
-  const cy = cytoscape({
+  // 使用window.cy让其成为全局变量，以便节日彩蛋脚本可以访问
+  window.cy = cytoscape({
     container: document.getElementById('cy'),
     elements: elementsData, // 从 data.js 中引入的元素数据
 
@@ -453,8 +460,26 @@ document.addEventListener('DOMContentLoaded', () => {
       <p>男性: ${maleCount}</p>
       <p>女性: ${femaleCount}</p>
     `;
+  }  updateStats(); // 初始化时调用
+  // ===============================
+  // 特殊节日彩蛋
+  // ===============================
+  if (typeof applyFestivalEffects === 'function') {
+    // 应用节日彩蛋特效
+    const festivalApplied = applyFestivalEffects(cy);
+    
+    if (festivalApplied) {
+      console.log('节日彩蛋已激活!');
+      
+      // 如果是520特殊日期，应用额外的互动效果
+      if (typeof check520AndAddSpecialInteraction === 'function') {
+        const is520 = check520AndAddSpecialInteraction();
+        if (is520) {
+          console.log('520特殊互动已激活!');
+        }
+      }
+    }
   }
-  updateStats(); // 初始化时调用
 
   // ===============================
   // 14. 键盘快捷键
@@ -474,14 +499,10 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
     }
   });
-
   // ===============================
   // 15. Toast 通知
   // ===============================
-  const showNotification = message => {
-    $('#toastBody').text(message);
-    $('#notification').toast('show');
-  };
+  // 使用全局定义的通知函数
   cy.on('select', 'node', evt => {
     const { id } = evt.target.data();
     showNotification(`选中节点: ${id}`);

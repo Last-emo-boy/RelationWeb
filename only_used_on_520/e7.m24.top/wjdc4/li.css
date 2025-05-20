@@ -1,0 +1,371 @@
+   :root {
+            --glow-color: #ff4d6d;
+        }
+
+        /* 新增抖动动画 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .apocalypse-shake {
+            animation: shake 0.1s infinite;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f3e8ff 0%, #ecdfff 100%);
+            transition: background 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        /* 其余原有样式保持不变... */
+        .container {
+            width: 400px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(208, 191, 255, 0.3);
+            position: relative;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(5px);
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s;
+        }
+
+        button {
+            background: #d0bfff;
+            border-color: #b8a2eb;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                transparent 35%,
+                rgba(255,255,255,0.2) 50%,
+                transparent 65%
+            );
+            animation: btnGlow 2s infinite;
+        }
+
+        .apocalypse-mode {
+            background: radial-gradient(
+                circle at center,
+                #800000 0%,
+                #400000 60%,
+                #200000 100%
+            ) !important;
+        }
+
+        .deep-apocalypse-mode{
+            background: 
+                radial-gradient(circle at 20% 20%, #ff0000 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, #ff0000 0%, transparent 50%),
+                linear-gradient(45deg, #000000 0%, #400000 100%);
+        }
+
+        .blood-text {
+            position: absolute;
+            font-size: 16px;
+            color: var(--glow-color);
+            text-shadow: 0 0 15px var(--glow-color);
+            animation:
+                typing 2s steps(40) forwards,
+                flicker 0.15s infinite 2s,
+                float 3s infinite 2s;
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0;
+            filter: blur(0.5px);
+        }
+
+        .blood-box {
+            position: absolute;
+            background: rgba(90, 0, 0, 0.7);
+            border: 2px solid var(--glow-color);
+            border-radius: 10px;
+            padding: 15px 25px;
+            color: var(--glow-color);
+            animation:
+                boxAppear 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+                boxCrack 2s infinite alternate;
+            box-shadow: 0 0 30px var(--glow-color);
+            transform-origin: center;
+            pointer-events: none;
+            backdrop-filter: blur(2px);
+        }
+
+        @keyframes typing {
+            0% { width: 0; opacity: 1; }
+            99% { opacity: 1; }
+            100% { width: 100%; opacity: 1; }
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes boxAppear {
+            from { transform: scale(0) rotate(-15deg); opacity: 0; }
+            to { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        @keyframes boxCrack{
+            0% {transform: scale(1);}
+            100% {transform: scale(1.03); border-width: 4px;}
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes btnGlow {
+            from { transform: rotate(0deg) translateX(-50%); }
+            to { transform: rotate(360deg) translateX(-50%); }
+        }
+
+        .retry-text{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-size: 24px;
+            text-shadow: 0 0 20px #ffffff;
+            opacity: 0;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut{
+          0%, 100% { opacity: 0; }
+          20%, 80% { opacity: 1; }
+        }
+
+        .blood-rain {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .blood-drop {
+            position: absolute;
+            width: 3px;
+            height: 20px;
+            background: #ff4d6d;
+            animation: fall 1s linear infinite;
+        }
+
+        @keyframes fall {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(100vh); }
+        }
+
+        .blood-splatter {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            opacity: 0.8;
+            background: radial-gradient(circle, #ff4d6d 0%, transparent 70%);
+            animation: splatter 0.5s forwards;
+        }
+
+        @keyframes splatter {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 基本样式 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#question {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+#answer {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #d0bfff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #d0bfff;
+}
+
+/* 弹窗样式 */
+.popup {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid black;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    font-size: 18px;
+    text-align: center;
+}
+
+.popup button {
+    margin-top: 10px;
+}
+
+/* 末日模式样式 */
+.apocalypse-mode {
+    background-color: #8b0000;
+    color: #fff;
+}
+
+.apocalypse-shake {
+    animation: shake 0.5s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.blood-text, .blood-box {
+    position: absolute;
+    color: #ff0000;
+    font-weight: bold;
+    animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0); }
+}
+
+.blood-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+.blood-drop {
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background-color: #ff0000;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    to { transform: translateY(100vh); }
+}
+
+.blood-splatter {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: #ff0000;
+    opacity: 0.7;
+    border-radius: 50%;
+    animation: splatter 0.5s ease-out;
+}
+
+@keyframes splatter {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+}
+
+.retry-text {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: #fff;
+    z-index: 1002;
+}
