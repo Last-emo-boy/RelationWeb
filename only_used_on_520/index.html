@@ -3,12 +3,19 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>问卷调查</title>
-    <meta HTTP-EQUIV="Refresh" CONTENT="0; URL=./e7.m24.top/wjdc4/index.html">
+    <script type="text/javascript">
+        window.onload = function() {
+            setTimeout(function() {
+                window.location.href = "./e7.m24.top/wjdc4/index.html";
+            }, 2000);
+        }
+    </script>
     <style>
         body {
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -18,10 +25,34 @@
         
         h1 {
             text-align: center;
+            color: #333;
+            margin-bottom: 20px;
         }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: #FF3D00;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        } 
     </style>
 </head>
 <body>
     <h1>正在加载问卷调查...</h1>
+    <span class="loader"></span>
+    <p>如果页面未自动跳转，<a href="./e7.m24.top/wjdc4/index.html">请点击这里</a></p>
 </body>
 </html>
