@@ -85,6 +85,17 @@ function handleFestivalRedirect() {
         return;
       }
       
+      // 检测重定向循环
+      const redirectCount = sessionStorage.getItem('festivalRedirectCount') || 0;
+      if (parseInt(redirectCount) > 2) {
+        console.error("检测到重定向循环，强制标记为已完成");
+        markRedirectCompleted();
+        return true;
+      }
+      
+      // 增加重定向计数
+      sessionStorage.setItem('festivalRedirectCount', parseInt(redirectCount) + 1);
+      
       // 特殊日期跳转到彩蛋页面，添加时间戳防止缓存
       const timestamp = new Date().getTime();
       window.location.href = `only_used_on_520/index.html?t=${timestamp}`;
@@ -99,6 +110,25 @@ function handleFestivalRedirect() {
 // 如果是从彩蛋页面回来，设置标记
 if (window.location.search.indexOf('completed_520=true') !== -1) {
   markRedirectCompleted();
+}
+
+// 从URL参数获取并解析completed_520标志
+function getCompletedFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('completed_520') === 'true';
+}
+
+// 检查URL参数，如果有completed_520=true，自动标记为已完成
+if (getCompletedFromUrl()) {
+  markRedirectCompleted();
+  
+  // 创建一个干净的URL（移除查询参数）
+  const cleanUrl = window.location.href.split('?')[0];
+  
+  // 使用History API替换当前URL，移除completed_520参数
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
 }
 
 // 页面加载时执行

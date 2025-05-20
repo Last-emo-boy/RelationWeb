@@ -78,9 +78,76 @@
                 this.style.color = 'white';
             }, false);
         });
+        
+        // Special dates Easter eggs
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const month = today.getMonth() + 1;
+            const day = today.getDate();
+            
+            // 520 - May 20th (Chinese Internet Valentine's Day)
+            if (month === 5 && day === 20) {
+                document.body.insertAdjacentHTML('afterbegin', 
+                    '<div class="easter-egg" style="background-color: #ffb6c1; text-align: center; padding: 10px; color: white; font-weight: bold;">今天是520，爱你呦! ❤️</div>');
+            }
+            
+            // 214 - February 14th (Valentine's Day)
+            if (month === 2 && day === 14) {
+                document.body.insertAdjacentHTML('afterbegin', 
+                    '<div class="easter-egg" style="background-color: #ff69b4; text-align: center; padding: 10px; color: white; font-weight: bold;">情人节快乐! 💘</div>');
+            }
+            
+            // Qixi Festival - 7th day of 7th lunar month (need to calculate or hardcode for specific years)
+            // For simplicity, I'll use August 11th 2024 as an example
+            if (month === 8 && day === 11 && today.getFullYear() === 2024) {
+                document.body.insertAdjacentHTML('afterbegin', 
+                    '<div class="easter-egg" style="background-color: #9370db; text-align: center; padding: 10px; color: white; font-weight: bold;">七夕节快乐! 🎋</div>');
+            }
+        });
     </script>
     <div class="container">
         <h1>Changelog</h1>
+        <section>
+            <h2>版本 2.0.2 - <span class="date"><?php echo date('Y-m-d'); ?></span></h2>
+            <ul>
+                <li>更新了一些关系状态</li>
+                <li>增加了节日彩蛋 (520, 214, 七夕)</li>
+                <li>
+                    关系变动:
+                    <button data-bs-toggle="modal" data-bs-target="#modalUpdate202">查看详细</button>
+                </li>
+                <li>
+                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/" class="btn-link" target="_blank">查看提交</a>
+                </li>
+            </ul>
+        </section>
+        
+        <!-- 今日更新模态窗口 -->
+        <div class="modal" id="modalUpdate202" tabindex="-1" aria-labelledby="modalUpdate202Label" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalUpdate202Label">关系状态更新详情</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>变更CURRENT_PARTNER为EX_PARTNER关系</h6>
+                        <ul>
+                            <li>陈宣妤 <--> 赵一玮</li>
+                            <li>沈天阔 <--> 夏印荷</li>
+                            <li>邓屹阳 <--> 李若宁</li>
+                            <li>周易诚 <--> 钱若瑜</li>
+                            <li>曹禛 <--> 张扬婧</li>
+                        </ul>
+                        <h6>新增CURRENT_PARTNER关系</h6>
+                        <ul>
+                            <li>施与姚 <--> 孙佳择</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <section>
             <h2>版本 2.0.1 - <span class="date">2025-01-15</span></h2>
             <ul>
