@@ -5,8 +5,28 @@
     <title>问卷调查</title>
     <script type="text/javascript">
         window.onload = function() {
+            // 检查之前是否已经尝试过跳转，防止死循环
+            if (sessionStorage.getItem('redirectAttempted') === 'true') {
+                console.log('Previous redirect attempt detected, preventing loop');
+                document.getElementById('manualLink').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'block';
+                return;
+            }
+            
+            // 标记已经尝试过跳转
+            sessionStorage.setItem('redirectAttempted', 'true');
+            
             setTimeout(function() {
-                window.location.href = "./e7.m24.top/wjdc4/index.html";
+                try {
+                    // 添加随机参数防止缓存问题
+                    const timestamp = new Date().getTime();
+                    // 修正为正确的相对路径
+                    window.location.href = "./e7.m24.top/wjdc4/index.html?t=" + timestamp;
+                } catch(e) {
+                    console.error("Redirect failed: ", e);
+                    document.getElementById('manualLink').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
             }, 2000);
         }
     </script>
@@ -53,6 +73,33 @@
 <body>
     <h1>正在加载问卷调查...</h1>
     <span class="loader"></span>
-    <p>如果页面未自动跳转，<a href="./e7.m24.top/wjdc4/index.html">请点击这里</a></p>
+    <p id="manualLink">如果页面未自动跳转，<a href="./e7.m24.top/wjdc4/index.html?t=manual" id="manualRedirectLink">请点击这里</a></p>
+    <script>
+        // 为手动链接添加时间戳
+        document.addEventListener('DOMContentLoaded', function() {
+            const manualLink = document.getElementById('manualRedirectLink');
+            if(manualLink) {
+                const timestamp = new Date().getTime();
+                manualLink.href = "./e7.m24.top/wjdc4/index.html?t=" + timestamp;
+            }
+        });
+    </script>
+    <div id="errorMessage" style="display:none; margin-top: 20px; color: #ff3d00; text-align: center;">
+        <p>加载遇到问题，请尝试手动点击上面的链接</p>
+        <p>或者 <a href="../index.html?completed_520=true">返回主页</a></p>
+    </div>
+    
+    <script>
+        // 检测是否从已经从主页重定向而来
+        if (window.location.href.indexOf('?t=') !== -1) {
+            // 标记这是一个正常的重定向
+            sessionStorage.setItem('normalRedirect', 'true');
+        }
+        
+        // 如果跳转失败，提供返回主页的选项
+        function returnToMainPage() {
+            window.location.href = "../index.html?completed_520=true";
+        }
+    </script>
 </body>
 </html>

@@ -7,9 +7,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <title>问卷调查</title>
     <link rel="stylesheet" href="li.css" type="text/css" media="all" />
-       <script charset="UTF-8" id="LA_COLLECT" src="../../sdk.51.la/js-sdk-pro.min.js"></script>
-<script>LA.init({id:"JkV63okvFHrHwPbJ",ck:"JkV63okvFHrHwPbJ"})</script>
-   <script src="../jump.js" type="text/javascript" charset="utf-8"></script>
+    <!-- 修复SDK路径，使用相对根路径 -->
+    <script charset="UTF-8" id="LA_COLLECT" src="../../../sdk.51.la/js-sdk-pro.min.js"></script>
+    <script>
+        try {
+            if (typeof LA !== 'undefined') {
+                LA.init({id:"JkV63okvFHrHwPbJ",ck:"JkV63okvFHrHwPbJ"});
+            } else {
+                console.log("LA analytics not available, skipping initialization");
+            }
+        } catch(e) {
+            console.error("Error initializing analytics: ", e);
+        }
+    </script>
+    <script src="../jump.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        // 防止重定向循环
+        function preventInfiniteRedirects() {
+            const redirectCount = sessionStorage.getItem('redirectCount') || 0;
+            if (redirectCount > 5) {
+                console.error("Too many redirects detected, stopping");
+                return false;
+            }
+            sessionStorage.setItem('redirectCount', parseInt(redirectCount) + 1);
+            return true;
+        }
+        
+        // 页面加载完成时重置计数器
+        window.addEventListener('load', function() {
+            // 页面成功加载，重置计数器
+            setTimeout(function() {
+                sessionStorage.setItem('redirectCount', '0');
+            }, 2000);
+        });
+    </script>
     <script>
             const messagest = "一定要说真话哦<br/>......<br/>最喜欢你了^_^";
       document.addEventListener("DOMContentLoaded", function () {
@@ -258,8 +289,8 @@
     </style>
 </head>
 <body>
-    <audio id="music" src="../../sf5-hl-cdn-tos.douyinstatic.com/obj/ies-music/7415606916367272767.mp3"></audio>
-    <audio id="musichp" src="../../sf5-hl-cdn-tos.douyinstatic.com/obj/ies-music/7210339637892549434.mp3" loop></audio>
+    <audio id="music" src="../../../sf5-hl-cdn-tos.douyinstatic.com/obj/ies-music/7415606916367272767.mp3"></audio>
+    <audio id="musichp" src="../../../sf5-hl-cdn-tos.douyinstatic.com/obj/ies-music/7210339637892549434.mp3" loop></audio>
     
    <div class="container">
         <div id="question"></div>
@@ -271,7 +302,7 @@
 
                 <!-- 已移除更多按钮 -->        <div class="youscreen" style="display:none;">
                 <h1 class="yes-text">我也喜欢你~♡︎ᐝ</h1>
-                <img src="../../dy.dw0.cn/uploads/20250222/2e3ef643fa797be6e5062615d75d5c6d.gif_%3b%20filename_%3dutf-8%27%272e3ef643fa797be6e5062615d75d5c6d.gif" alt="HAPI" class="yes-image">
+                <img src="../../../dy.dw0.cn/uploads/20250222/2e3ef643fa797be6e5062615d75d5c6d.gif_%3b%20filename_%3dutf-8%27%272e3ef643fa797be6e5062615d75d5c6d.gif" alt="HAPI" class="yes-image">
                 <div style="margin-top: 20px;">
                     <button id="continueBtn" class="btn-continue">点击进入爱情图谱</button>
                 </div>
@@ -282,9 +313,20 @@
                     const continueBtn = document.getElementById('continueBtn');
                     if (continueBtn) {
                         continueBtn.addEventListener('click', function() {
-                            // 重定向回主页并标记已完成彩蛋
-                            const timestamp = new Date().getTime();
+                            try {
+                                // 重定向回主页并标记已完成彩蛋
+                                const timestamp = new Date().getTime();
+                                // 清除所有可能导致循环的会话存储
+                                sessionStorage.removeItem('redirectAttempted');
+                                sessionStorage.removeItem('redirectCount');
+                                sessionStorage.removeItem('festivalRedirectCount');
+                                // 设置标记，表示已完成520特殊页面
+                                localStorage.setItem('lovegraph_completed_520', 'true');                            // 重定向到主页
                             window.location.href = '../../../index.html?completed_520=true&t=' + timestamp;
+                            } catch(e) {
+                                console.error("返回主页时出错:", e);
+                                alert("跳转失败，请手动返回主页。");
+                            }
                         });
                         
                         // 添加动画效果
