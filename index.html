@@ -2,16 +2,33 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="description" content="Love Graph - 探索人际关系网络的可视化工具，发现连接、寻找路径、搜索节点" />
   <meta name="keywords" content="关系图谱, 社交网络, 可视化, 人际关系" />
   <meta name="author" content="Love Graph Team" />
-  <meta name="theme-color" content="#6366f1" />
+  <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+  
+  <!-- PWA Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Love Graph" />
+  <meta name="application-name" content="Love Graph" />
+  <meta name="msapplication-TileColor" content="#6366f1" />
+  <meta name="msapplication-config" content="browserconfig.xml" />
   
   <title>Love Graph - 探索关系连接</title>
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💕</text></svg>">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152x152.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png" />
   
   <!-- 预加载关键资源 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -475,9 +492,161 @@
     </div>
   </div>
 
+  <!-- PWA 安装提示 -->
+  <div id="pwaInstallPrompt" class="pwa-install-prompt hidden">
+    <div class="pwa-install-content">
+      <div class="pwa-install-icon">💕</div>
+      <div class="pwa-install-text">
+        <strong>安装 Love Graph</strong>
+        <span>添加到主屏幕，随时访问</span>
+      </div>
+      <div class="pwa-install-actions">
+        <button id="pwaInstallBtn" class="btn btn-primary btn-sm">
+          <i class="fas fa-download"></i> 安装
+        </button>
+        <button id="pwaInstallDismiss" class="btn btn-ghost btn-sm">
+          稍后
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PWA 更新提示 -->
+  <div id="pwaUpdatePrompt" class="pwa-update-prompt hidden">
+    <div class="pwa-update-content">
+      <i class="fas fa-sync-alt"></i>
+      <span>有新版本可用</span>
+      <button id="pwaUpdateBtn" class="btn btn-primary btn-sm">立即更新</button>
+      <button id="pwaUpdateDismiss" class="btn btn-ghost btn-sm">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- 离线提示 -->
+  <div id="offlineIndicator" class="offline-indicator hidden">
+    <i class="fas fa-wifi-slash"></i>
+    <span>离线模式</span>
+  </div>
+
   <!-- 脚本 -->
   <script src="data.js"></script>
   <script src="main.js"></script>
   <script src="share.js"></script>
+  
+  <!-- PWA Service Worker 注册 -->
+  <script>
+    // Service Worker 注册
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          const registration = await navigator.serviceWorker.register('/sw.js', {
+            scope: '/'
+          });
+          
+          console.log('[PWA] Service Worker registered:', registration.scope);
+          
+          // 检查更新
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // 新版本可用，显示更新提示
+                showUpdatePrompt(registration);
+              }
+            });
+          });
+          
+        } catch (error) {
+          console.error('[PWA] Service Worker registration failed:', error);
+        }
+      });
+      
+      // 监听控制器变化（更新后刷新页面）
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
+    }
+    
+    // PWA 安装提示
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      // 检查是否已经安装或用户已经拒绝
+      const dismissed = localStorage.getItem('pwaInstallDismissed');
+      const dismissedTime = dismissed ? parseInt(dismissed) : 0;
+      const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
+      
+      // 如果超过7天，再次显示
+      if (!dismissed || daysSinceDismissed > 7) {
+        setTimeout(() => {
+          document.getElementById('pwaInstallPrompt')?.classList.remove('hidden');
+        }, 3000);
+      }
+    });
+    
+    // 安装按钮点击
+    document.getElementById('pwaInstallBtn')?.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      
+      console.log('[PWA] Install prompt outcome:', outcome);
+      deferredPrompt = null;
+      
+      document.getElementById('pwaInstallPrompt')?.classList.add('hidden');
+    });
+    
+    // 稍后按钮点击
+    document.getElementById('pwaInstallDismiss')?.addEventListener('click', () => {
+      localStorage.setItem('pwaInstallDismissed', Date.now().toString());
+      document.getElementById('pwaInstallPrompt')?.classList.add('hidden');
+    });
+    
+    // 显示更新提示
+    function showUpdatePrompt(registration) {
+      const updatePrompt = document.getElementById('pwaUpdatePrompt');
+      updatePrompt?.classList.remove('hidden');
+      
+      document.getElementById('pwaUpdateBtn')?.addEventListener('click', () => {
+        registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
+        updatePrompt?.classList.add('hidden');
+      });
+      
+      document.getElementById('pwaUpdateDismiss')?.addEventListener('click', () => {
+        updatePrompt?.classList.add('hidden');
+      });
+    }
+    
+    // 检测已安装状态
+    window.addEventListener('appinstalled', () => {
+      console.log('[PWA] App installed');
+      deferredPrompt = null;
+      document.getElementById('pwaInstallPrompt')?.classList.add('hidden');
+    });
+    
+    // 离线/在线状态监测
+    function updateOnlineStatus() {
+      const offlineIndicator = document.getElementById('offlineIndicator');
+      if (!navigator.onLine) {
+        offlineIndicator?.classList.remove('hidden');
+      } else {
+        offlineIndicator?.classList.add('hidden');
+      }
+    }
+    
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+  </script>
 </body>
 </html>

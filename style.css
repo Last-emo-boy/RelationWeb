@@ -1889,3 +1889,205 @@ img {
     transform: scale(1);
   }
 }
+
+/* ========================================
+   PWA 样式
+   ======================================== */
+
+/* 安装提示 */
+.pwa-install-prompt {
+  position: fixed;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  animation: slideUp 0.4s ease;
+}
+
+.pwa-install-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl), 0 0 0 1px var(--color-border);
+  max-width: 420px;
+}
+
+.pwa-install-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.pwa-install-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pwa-install-text strong {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.pwa-install-text span {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.pwa-install-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* 更新提示 */
+.pwa-update-prompt {
+  position: fixed;
+  top: calc(var(--header-height) + var(--space-4));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.pwa-update-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  font-size: 0.875rem;
+}
+
+.pwa-update-content i {
+  font-size: 1rem;
+}
+
+.pwa-update-content .btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+}
+
+.pwa-update-content .btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.pwa-update-content .btn-ghost {
+  background: transparent;
+  padding: var(--space-1);
+}
+
+/* 离线指示器 */
+.offline-indicator {
+  position: fixed;
+  bottom: var(--space-4);
+  right: var(--space-4);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-warning);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.offline-indicator i {
+  font-size: 0.9rem;
+}
+
+/* Ghost 按钮样式 */
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: none;
+}
+
+.btn-ghost:hover {
+  color: var(--color-text);
+  background: var(--color-bg-secondary);
+}
+
+/* PWA 响应式 */
+@media (max-width: 480px) {
+  .pwa-install-prompt {
+    bottom: var(--space-4);
+    left: var(--space-4);
+    right: var(--space-4);
+    transform: none;
+  }
+  
+  .pwa-install-content {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .pwa-install-text {
+    width: 100%;
+  }
+  
+  .pwa-install-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .pwa-update-prompt {
+    left: var(--space-4);
+    right: var(--space-4);
+    transform: none;
+  }
+  
+  .pwa-update-content {
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+}
+
+/* iOS 安全区域适配 */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .pwa-install-prompt {
+    bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  }
+  
+  .offline-indicator {
+    bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+    right: calc(var(--space-4) + env(safe-area-inset-right));
+  }
+  
+  .footer {
+    padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  }
+}
