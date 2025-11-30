@@ -1,398 +1,1323 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Changelog - Love Graph</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Love Graph 更新日志 - 查看项目的版本更新历史">
+  <title>更新日志 - Love Graph</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💕</text></svg>">
+  
+  <!-- 字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- 图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    /* ========================================
+       CSS 变量
+       ======================================== */
+    :root {
+      /* 颜色系统 */
+      --color-primary: #6366f1;
+      --color-primary-dark: #4f46e5;
+      --color-primary-light: #818cf8;
+      
+      --color-success: #22c55e;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --color-info: #8b5cf6;
+      
+      /* 背景色 */
+      --color-bg: #f8fafc;
+      --color-bg-secondary: #f1f5f9;
+      --color-surface: #ffffff;
+      
+      /* 文字色 */
+      --color-text: #1e293b;
+      --color-text-secondary: #64748b;
+      --color-text-muted: #94a3b8;
+      --color-text-inverse: #ffffff;
+      
+      /* 边框 */
+      --color-border: #e2e8f0;
+      --color-border-light: #f1f5f9;
+      
+      /* 圆角 */
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --radius-full: 9999px;
+      
+      /* 阴影 */
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      
+      /* 间距 */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      --spacing-2xl: 48px;
+      
+      /* 过渡 */
+      --transition-fast: 150ms ease;
+      --transition-normal: 200ms ease;
+      --transition-slow: 300ms ease;
+    }
 
-    <!-- Bootstrap Bundle JS (包括Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    /* 深色主题 */
+    [data-theme="dark"] {
+      --color-bg: #0f172a;
+      --color-bg-secondary: #1e293b;
+      --color-surface: #1e293b;
+      --color-text: #f1f5f9;
+      --color-text-secondary: #94a3b8;
+      --color-text-muted: #64748b;
+      --color-border: #334155;
+      --color-border-light: #1e293b;
+    }
 
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f4f4f9;
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #0056b3;
-        }
-        h2 {
-            border-bottom: 2px solid #0056b3;
-            padding-bottom: 5px;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            margin-bottom: 10px;
-        }
-        .date {
-            font-style: italic;
-            color: #666;
-        }
-        .btn-link {
-            display: inline-block;
-            padding: 8px 15px;
-            margin: 5px 0;
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-        }
-        .btn-link:hover {
-            background-color: #0056b3;
-        }
-        .sensitive {
-            background-color: black;
-            color: black;
-            border-radius: 4px;
-            padding: 0 4px;
-        }
-        .sensitive:hover, .sensitive:focus {
-            color: white;
-        }
-    </style>
+    /* ========================================
+       基础样式
+       ======================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ========================================
+       头部
+       ======================================== */
+    .header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+
+    .header-content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--spacing-md) var(--spacing-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      text-decoration: none;
+      color: var(--color-text);
+    }
+
+    .logo-icon {
+      font-size: 1.5rem;
+    }
+
+    .logo-text {
+      font-size: 1.25rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--color-primary), #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-icon {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      background: var(--color-bg-secondary);
+      color: var(--color-text);
+      border-radius: var(--radius-md);
+    }
+
+    .btn-icon:hover {
+      background: var(--color-border);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-outline:hover {
+      background: var(--color-bg-secondary);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    /* ========================================
+       主内容区
+       ======================================== */
+    .main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--spacing-2xl) var(--spacing-lg);
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: var(--spacing-2xl);
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      background: linear-gradient(135deg, var(--color-primary), #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-description {
+      color: var(--color-text-secondary);
+      font-size: 1.1rem;
+    }
+
+    /* ========================================
+       时间线
+       ======================================== */
+    .timeline {
+      position: relative;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--color-primary), var(--color-info), var(--color-success));
+      border-radius: var(--radius-full);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 60px;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .timeline-marker {
+      position: absolute;
+      left: 8px;
+      top: 4px;
+      width: 26px;
+      height: 26px;
+      background: var(--color-surface);
+      border: 3px solid var(--color-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--color-primary);
+      z-index: 1;
+    }
+
+    .timeline-marker.major {
+      background: var(--color-primary);
+      color: white;
+      width: 30px;
+      height: 30px;
+      left: 6px;
+    }
+
+    .version-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--color-border);
+      transition: all var(--transition-normal);
+    }
+
+    .version-card:hover {
+      box-shadow: var(--shadow-lg);
+      border-color: var(--color-primary-light);
+    }
+
+    .version-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .version-info {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .version-number {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .version-date {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+    }
+
+    .version-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tag-major {
+      background: linear-gradient(135deg, var(--color-primary), #ec4899);
+      color: white;
+    }
+
+    .tag-minor {
+      background: var(--color-info);
+      color: white;
+    }
+
+    .tag-patch {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-secondary);
+    }
+
+    .version-changes {
+      list-style: none;
+    }
+
+    .change-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .change-item:last-child {
+      border-bottom: none;
+    }
+
+    .change-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .change-icon.added {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--color-success);
+    }
+
+    .change-icon.changed {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--color-warning);
+    }
+
+    .change-icon.removed {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--color-danger);
+    }
+
+    .change-icon.fixed {
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--color-primary);
+    }
+
+    .change-text {
+      flex: 1;
+      color: var(--color-text);
+    }
+
+    .sensitive {
+      background: var(--color-text);
+      color: var(--color-text);
+      border-radius: var(--radius-sm);
+      padding: 0 4px;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+
+    .sensitive:hover {
+      color: var(--color-text-inverse);
+    }
+
+    .version-footer {
+      margin-top: var(--spacing-md);
+      padding-top: var(--spacing-md);
+      border-top: 1px solid var(--color-border-light);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      flex-wrap: wrap;
+    }
+
+    .commit-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--color-bg-secondary);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      font-size: 0.8rem;
+      transition: all var(--transition-normal);
+    }
+
+    .commit-link:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .detail-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--color-bg-secondary);
+      color: var(--color-text-secondary);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+
+    .detail-btn:hover {
+      background: var(--color-info);
+      color: white;
+    }
+
+    /* ========================================
+       模态框
+       ======================================== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-md);
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-container {
+      position: relative;
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+      animation: modal-in 0.3s ease;
+    }
+
+    @keyframes modal-in {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-lg);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-bg-secondary);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: all var(--transition-normal);
+    }
+
+    .modal-close:hover {
+      background: var(--color-danger);
+      color: white;
+    }
+
+    .modal-body {
+      padding: var(--spacing-lg);
+      overflow-y: auto;
+      max-height: calc(80vh - 120px);
+    }
+
+    .modal-section {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .modal-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal-section h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .modal-list {
+      list-style: none;
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-sm);
+    }
+
+    .modal-list li {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: 0.9rem;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .modal-list li::before {
+      content: '•';
+      color: var(--color-primary);
+    }
+
+    /* ========================================
+       底部
+       ======================================== */
+    .footer {
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      padding: var(--spacing-lg);
+      text-align: center;
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* ========================================
+       响应式
+       ======================================== */
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 1.75rem;
+      }
+
+      .timeline::before {
+        left: 15px;
+      }
+
+      .timeline-item {
+        padding-left: 50px;
+      }
+
+      .timeline-marker {
+        left: 5px;
+        width: 22px;
+        height: 22px;
+      }
+
+      .timeline-marker.major {
+        width: 24px;
+        height: 24px;
+        left: 4px;
+      }
+
+      .version-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .version-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
 <body>
-    <script>
-        // Add touch event for touch devices
-        document.querySelectorAll('.sensitive').forEach(item => {
-            item.addEventListener('touchstart', function() {
-                this.style.color = 'white';
-            }, false);
-        });
-        
-        // Special dates Easter eggs
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date();
-            const month = today.getMonth() + 1;
-            const day = today.getDate();
-            
-            // 520 - May 20th (Chinese Internet Valentine's Day)
-            if (month === 5 && day === 20) {
-                document.body.insertAdjacentHTML('afterbegin', 
-                    '<div class="easter-egg" style="background-color: #ffb6c1; text-align: center; padding: 10px; color: white; font-weight: bold;">今天是520，爱你呦! ❤️</div>');
-            }
-            
-            // 214 - February 14th (Valentine's Day)
-            if (month === 2 && day === 14) {
-                document.body.insertAdjacentHTML('afterbegin', 
-                    '<div class="easter-egg" style="background-color: #ff69b4; text-align: center; padding: 10px; color: white; font-weight: bold;">情人节快乐! 💘</div>');
-            }
-            
-            // Qixi Festival - 7th day of 7th lunar month (need to calculate or hardcode for specific years)
-            // For simplicity, I'll use August 11th 2024 as an example
-            if (month === 8 && day === 11 && today.getFullYear() === 2024) {
-                document.body.insertAdjacentHTML('afterbegin', 
-                    '<div class="easter-egg" style="background-color: #9370db; text-align: center; padding: 10px; color: white; font-weight: bold;">七夕节快乐! 🎋</div>');
-            }
-        });
-    </script>
-    <div class="container">
-        <h1>Changelog</h1>
-        <section>
-            <h2>版本 2.0.2 - <span class="date"><?php echo date('Y-m-d'); ?></span></h2>
-            <ul>
-                <li>更新了一些关系状态</li>
-                <li>增加了节日彩蛋 (520, 214, 七夕)</li>
-                <li>
-                    关系变动:
-                    <button data-bs-toggle="modal" data-bs-target="#modalUpdate202">查看详细</button>
-                </li>
-                <li>
-                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/" class="btn-link" target="_blank">查看提交</a>
-                </li>
-            </ul>
-        </section>
-        
-        <!-- 今日更新模态窗口 -->
-        <div class="modal" id="modalUpdate202" tabindex="-1" aria-labelledby="modalUpdate202Label" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalUpdate202Label">关系状态更新详情</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h6>变更CURRENT_PARTNER为EX_PARTNER关系</h6>
-                        <ul>
-                            <li>陈宣妤 <--> 赵一玮</li>
-                            <li>沈天阔 <--> 夏印荷</li>
-                            <li>邓屹阳 <--> 李若宁</li>
-                            <li>周易诚 <--> 钱若瑜</li>
-                            <li>曹禛 <--> 张扬婧</li>
-                        </ul>
-                        <h6>新增CURRENT_PARTNER关系</h6>
-                        <ul>
-                            <li>施与姚 <--> 孙佳择</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <section>
-            <h2>版本 2.0.1 - <span class="date">2025-01-15</span></h2>
-            <ul>
-                <li>UI大更新</li>
-                <li>新增了一堆新节点</li>
-                <li>删除一堆EX_PARTNER关系<span class="sensitive">我TM懒得详细写了</span></li>
-                <li>新增一堆CURRENT_PARTNER关系</li>
-                <li>
-                    新增一堆EX_PARTNER关系
-                </li>
-                
-                <li>
-                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/06d5f6e6a60558a2bc535e0c454ea10f525eafae" class="btn-link" target="_blank">查看提交</a>
-                </li>
-            </ul>
-        </section>
-        <section>
-            <h2>版本 1.3.2 - <span class="date">2024-04-30</span></h2>
-            <ul>
-                <li>新增了一个新节点</li>
-                <li>删除四条EX_PARTNER关系（对，因为<span class="sensitive">有小傻逼</span>情侣复合了），新增为CURRENT_PARTNER</li>
-                <li>新增两条CURRENT_PARTNER关系</li>
-                <li>
-                    新增两条EX_PARTNER关系
-                    <button data-bs-toggle="modal" data-bs-target="#modalThree">查看详细</button>
-                </li>
-                
-                <li>
-                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/06d5f6e6a60558a2bc535e0c454ea10f525eafae" class="btn-link" target="_blank">查看提交</a>
-                </li>
-            </ul>
-        </section>
-
-        <!-- 模态窗口内容 -->
-        <div class="modal" id="modalThree" tabindex="-1" aria-labelledby="modalThreeLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalThreeLabel">详细的AFFECTION关系</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h6>新增节点</h6>
-                        <ul>
-                            <li>1. {'data': {'id': '毕文凯', 'gender': '男'}} </li>
-                        </ul>
-                        <h6>删除EX_PARTNER关系</h6>
-                        <ul>
-                            <li>
-                                <ul>
-                                    <li>段佩辰 <--> 施与姚</li>
-                                    <li>温伽睿 <--> 方徐知</li>
-                                    <li>沈天阔 <--> 夏印荷</li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <h6>新增EX_PARTNER关系</h6>
-                        <ul>
-                            <li>
-                                <ul>
-                                    <li>毕文凯 <--> 陈辰</li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <h6>新增CURRENT_PARTNER关系</h6>
-                        <ul>
-                            <li>
-                                <ul>
-                                    <li>段佩辰 <--> 施与姚</li>
-                                    <li>温伽睿 <--> 方徐知</li>
-                                    <li>沈天阔 <--> 夏印荷</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <section>
-            <h2>版本 1.3.1 - <span class="date">2024-03-24</span></h2>
-            <ul>
-                <li>新增了一个新节点</li>
-                <li>新增两条CURRENT_PARTNER</li>
-                <li>
-                    删除一条AFFECTION关系
-                    <button data-bs-toggle="modal" data-bs-target="#modalTwo">查看详细</button>
-                </li>
-                
-                <li>
-                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/8b0e424dfbef5cb069caebcdcec732f15010c2ec" class="btn-link" target="_blank">查看提交</a>
-                </li>
-            </ul>
-        </section>
-
-
-        <!-- 模态窗口内容 -->
-        <div class="modal" id="modalTwo" tabindex="-1" aria-labelledby="modalTwoLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalTwoLabel">详细的AFFECTION关系</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h6>新增节点</h6>
-                        <ul>
-                            <li>1. {'data': {'id': '姜艺蕾', 'gender': '女'}} </li>
-                        </ul>
-                        <h6>新增CURRENT_PARTNER关系</h6>
-                        <ul>
-                            <li>
-                                <ul>
-                                    <li>姚博文 <--> 姜艺蕾</li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <h6>删除AFFECTION关系</h6>
-                        <ul>
-                            <li>
-                                <ul>
-                                    <li>姚博文 --> 姜艺蕾</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <section>
-            <h2>版本 1.3.0 - <span class="date">2024-03-23</span></h2>
-            <ul>
-                <li>增加了Github评论系统</li>
-                <li>
-                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/1d1ff2e3f1f60ddf68beadced535d89e4159041c" class="btn-link" target="_blank">查看提交</a>
-                </li>
-            </ul>
-        </section>
-        <section>
-            <h2>版本 1.2.1 - <span class="date">2024-03-19</span></h2>
-            <ul>
-                <li>新增了三个新节点</li>
-                <li>修复了一些问题</li>
-                <li>
-                    新增32条AFFECTION关系
-                    <button data-bs-toggle="modal" data-bs-target="#modalOne">查看详细</button>
-                </li>
-                <li>
-                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/90e23f6a14141da5f9d3e860396c6b2802e37370" class="btn-link" target="_blank">查看提交</a>
-                </li>
-            </ul>
-        </section>
-        
-        <!-- 模态窗口内容 -->
-        <div class="modal" id="modalOne" tabindex="-1" aria-labelledby="modalOneLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalOneLabel">详细的AFFECTION关系</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h6>新增节点</h6>
-                        <ul>
-                            <li>1. {'id': '吴思涵', 'gender': '女'} </li>
-                            <li>2. {'id': '陈昱桐', 'gender': '男'}</li>
-                            <li>3. {'id': '姚君竹', 'gender': '男'}</li>
-                        </ul>
-                        <h6>新增AFFECTION关系</h6>
-                        <ul>
-                            <li>
-                                <ul>
-                                    <li>周而成 --> 陈辰</li>
-                                    <li>吴思涵 --> 陈昱桐</li>
-                                    <li>陈予谦 --> 王伊倩</li>
-                                    <li>陈予谦 --> 方彬羽</li>
-                                    <li>陈予谦 --> 李若宁</li>
-                                    <li>严雍寒 --> 楼思越</li>
-                                    <li>何晨杰 --> 楼思越</li>
-                                    <li>楼思越 --> 何晨杰</li>
-                                    <li>姚君竹 --> 王圣涵</li>
-                                    <li>王圣涵 --> 韦子余</li>
-                                    <li>王圣涵 --> 秦汉文</li>
-                                    <li>秦汉文 --> 葛语歆</li>
-                                    <li>黄子宸 --> 徐嘉一</li>
-                                    <li>段佩辰 --> 张译匀</li>
-                                    <li>朱闻哲 --> 林以衡</li>
-                                    <li>何晨杰 --> 赵倩楠</li>
-                                    <li>彭泓钦 --> 赵倩楠</li>
-                                    <li>黄子宸 --> 万天艺</li>
-                                    <li>宋宇轩 --> 葛恒嘉</li>
-                                    <li>楼文颉 --> 王乐其</li>
-                                    <li>楼文颉 --> 王煜菲</li>
-                                    <li>侯思成 --> 陆朵朵</li>
-                                    <li>葛恒嘉 --> 姜一寻</li>
-                                    <li>郑筑轩 --> 方徐知</li>
-                                    <li>张津 --> 陈宣妤</li>
-                                    <li>张津 --> 李若宁</li>
-                                    <li>施展 --> 方晨曦</li>
-                                    <li>温伽睿 --> 张庭尔</li>
-                                    <li>倪哲晟 --> 陈辰</li>
-                                    <li>秦汉文 --> 于小格</li>
-                                    <li>赵虹昇 --> 葛恒嘉</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <section>
-            <h2>版本 1.2.0 - <span class="date">2024-03-19</span></h2>
-            <ul>
-                <li>新增了关系类型的可视化工具。</li>
-                <li>改进搜索算法，增加了模糊匹配功能。</li>
-                <li>修复了移动响应性相关的错误。</li>
-                <li>
-                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/64c45a0396b5ab95d30748896908f1934d4f4a75" class="btn-link" target="_blank">查看提交</a>
-                </li>
-            </ul>
-        </section>
-        <section>
-            <h2>版本 1.1.0 - <span class="date">2024-03-19</span></h2>
-            <ul>
-                <li>引入了导出图形为PNG和JPG的功能。</li>
-                <li>更新用户界面，以提供更好的用户体验。</li>
-                <li>小修小补，性能提升。</li>
-                <li>
-                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/64c45a0396b5ab95d30748896908f1934d4f4a75" class="btn-link" target="_blank">查看提交</a>
-                </li>
-            </ul>
-        </section>
-        <section>
-            <h2>版本 1.0.0 - <span class="date">2024-03-19</span></h2>
-            <ul>
-                <li>Love Graph初次发布。</li>
-                <li>功能包括探索和可视化关系连接。</li>
-                <li>
-                    <a href="https://github.com/Last-emo-boy/RelationWeb/commit/64c45a0396b5ab95d30748896908f1934d4f4a75" class="btn-link" target="_blank">查看提交</a>
-                </li>
-            </ul>
-        </section>        
+  <!-- 头部 -->
+  <header class="header">
+    <div class="header-content">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">💕</span>
+        <span class="logo-text">Love Graph</span>
+      </a>
+      <nav class="nav-actions">
+        <button id="themeToggle" class="btn btn-icon" title="切换主题">
+          <i class="fas fa-moon"></i>
+        </button>
+        <a href="index.html" class="btn btn-outline">
+          <i class="fas fa-arrow-left"></i>
+          <span>返回主页</span>
+        </a>
+      </nav>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">📋 更新日志</h1>
+      <p class="page-description">追踪 Love Graph 的每一次进化与改变</p>
+    </div>
+
+    <div class="timeline">
+      <!-- 3.1.0 - 数据探索增强 -->
+      <div class="timeline-item">
+        <div class="timeline-marker major">
+          <i class="fas fa-chart-pie"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v3.1.0</span>
+              <span class="version-tag tag-minor">功能更新</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2025-12-01
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增数据仪表盘，展示网络统计和图表分析</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增排行榜功能，支持按连接数、被好感数、前任数排名</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">仪表盘显示性别分布饼图、关系类型分布、连接度分布柱状图</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增按连接数筛选功能（滑块筛选器）</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon changed"><i class="fas fa-paint-brush"></i></span>
+              <span class="change-text">优化节点信息卡片，增加关系列表标签页</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon changed"><i class="fas fa-code"></i></span>
+              <span class="change-text">工具栏新增仪表盘和排行榜快捷按钮</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <a href="https://github.com/Last-emo-boy/RelationWeb" class="commit-link" target="_blank">
+              <i class="fab fa-github"></i>
+              查看仓库
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.0.0 -->
+      <div class="timeline-item">
+        <div class="timeline-marker major">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v3.0.0</span>
+              <span class="version-tag tag-major">重大更新</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2025-11-30
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon changed"><i class="fas fa-paint-brush"></i></span>
+              <span class="change-text">全新现代化 UI 设计，采用 CSS 变量系统</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">支持深色/浅色主题切换</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon changed"><i class="fas fa-code"></i></span>
+              <span class="change-text">代码架构重构，使用 ES6+ 类和模块化设计</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增键盘快捷键支持</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon removed"><i class="fas fa-minus"></i></span>
+              <span class="change-text">移除节日主题功能，简化界面</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon removed"><i class="fas fa-minus"></i></span>
+              <span class="change-text">移除前端添加/删除节点功能</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <a href="https://github.com/Last-emo-boy/RelationWeb" class="commit-link" target="_blank">
+              <i class="fab fa-github"></i>
+              查看仓库
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.0.2 -->
+      <div class="timeline-item">
+        <div class="timeline-marker">
+          <i class="fas fa-circle" style="font-size: 6px;"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v2.0.2</span>
+              <span class="version-tag tag-patch">补丁</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2025-01-20
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon changed"><i class="fas fa-sync"></i></span>
+              <span class="change-text">更新了一些关系状态</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">增加了节日彩蛋 (520, 214, 七夕)</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <button class="detail-btn" onclick="showModal('modal202')">
+              <i class="fas fa-eye"></i>
+              查看关系变动详情
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.0.1 -->
+      <div class="timeline-item">
+        <div class="timeline-marker">
+          <i class="fas fa-circle" style="font-size: 6px;"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v2.0.1</span>
+              <span class="version-tag tag-minor">功能更新</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2025-01-15
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon changed"><i class="fas fa-paint-brush"></i></span>
+              <span class="change-text">UI 大更新</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增了一堆新节点</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon removed"><i class="fas fa-minus"></i></span>
+              <span class="change-text">删除一堆 EX_PARTNER 关系 <span class="sensitive">我TM懒得详细写了</span></span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增一堆 CURRENT_PARTNER 关系</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <a href="https://github.com/Last-emo-boy/RelationWeb/commit/06d5f6e6a60558a2bc535e0c454ea10f525eafae" class="commit-link" target="_blank">
+              <i class="fab fa-github"></i>
+              查看提交
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3.2 -->
+      <div class="timeline-item">
+        <div class="timeline-marker">
+          <i class="fas fa-circle" style="font-size: 6px;"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v1.3.2</span>
+              <span class="version-tag tag-patch">补丁</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2024-04-30
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增了一个新节点</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon changed"><i class="fas fa-sync"></i></span>
+              <span class="change-text">删除四条 EX_PARTNER 关系（<span class="sensitive">有小傻逼</span>情侣复合了），新增为 CURRENT_PARTNER</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增两条 CURRENT_PARTNER 关系</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <button class="detail-btn" onclick="showModal('modal132')">
+              <i class="fas fa-eye"></i>
+              查看详情
+            </button>
+            <a href="https://github.com/Last-emo-boy/RelationWeb/commit/06d5f6e6a60558a2bc535e0c454ea10f525eafae" class="commit-link" target="_blank">
+              <i class="fab fa-github"></i>
+              查看提交
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3.1 -->
+      <div class="timeline-item">
+        <div class="timeline-marker">
+          <i class="fas fa-circle" style="font-size: 6px;"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v1.3.1</span>
+              <span class="version-tag tag-patch">补丁</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2024-03-24
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增了一个新节点</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增两条 CURRENT_PARTNER</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon removed"><i class="fas fa-minus"></i></span>
+              <span class="change-text">删除一条 AFFECTION 关系</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <button class="detail-btn" onclick="showModal('modal131')">
+              <i class="fas fa-eye"></i>
+              查看详情
+            </button>
+            <a href="https://github.com/Last-emo-boy/RelationWeb/commit/8b0e424dfbef5cb069caebcdcec732f15010c2ec" class="commit-link" target="_blank">
+              <i class="fab fa-github"></i>
+              查看提交
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3.0 -->
+      <div class="timeline-item">
+        <div class="timeline-marker">
+          <i class="fas fa-circle" style="font-size: 6px;"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v1.3.0</span>
+              <span class="version-tag tag-minor">功能更新</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2024-03-23
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">增加了 GitHub 评论系统</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <a href="https://github.com/Last-emo-boy/RelationWeb/commit/1d1ff2e3f1f60ddf68beadced535d89e4159041c" class="commit-link" target="_blank">
+              <i class="fab fa-github"></i>
+              查看提交
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2.1 -->
+      <div class="timeline-item">
+        <div class="timeline-marker">
+          <i class="fas fa-circle" style="font-size: 6px;"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v1.2.1</span>
+              <span class="version-tag tag-patch">补丁</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2024-03-19
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增了三个新节点</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon fixed"><i class="fas fa-wrench"></i></span>
+              <span class="change-text">修复了一些问题</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增 32 条 AFFECTION 关系</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <button class="detail-btn" onclick="showModal('modal121')">
+              <i class="fas fa-eye"></i>
+              查看详情
+            </button>
+            <a href="https://github.com/Last-emo-boy/RelationWeb/commit/90e23f6a14141da5f9d3e860396c6b2802e37370" class="commit-link" target="_blank">
+              <i class="fab fa-github"></i>
+              查看提交
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2.0 -->
+      <div class="timeline-item">
+        <div class="timeline-marker">
+          <i class="fas fa-circle" style="font-size: 6px;"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v1.2.0</span>
+              <span class="version-tag tag-minor">功能更新</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2024-03-19
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">新增了关系类型的可视化工具</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon changed"><i class="fas fa-search"></i></span>
+              <span class="change-text">改进搜索算法，增加了模糊匹配功能</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon fixed"><i class="fas fa-wrench"></i></span>
+              <span class="change-text">修复了移动响应性相关的错误</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <a href="https://github.com/Last-emo-boy/RelationWeb/commit/64c45a0396b5ab95d30748896908f1934d4f4a75" class="commit-link" target="_blank">
+              <i class="fab fa-github"></i>
+              查看提交
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.1.0 -->
+      <div class="timeline-item">
+        <div class="timeline-marker">
+          <i class="fas fa-circle" style="font-size: 6px;"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v1.1.0</span>
+              <span class="version-tag tag-minor">功能更新</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2024-03-19
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">引入了导出图形为 PNG 和 JPG 的功能</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon changed"><i class="fas fa-paint-brush"></i></span>
+              <span class="change-text">更新用户界面，提供更好的用户体验</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon fixed"><i class="fas fa-wrench"></i></span>
+              <span class="change-text">小修小补，性能提升</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <a href="https://github.com/Last-emo-boy/RelationWeb/commit/64c45a0396b5ab95d30748896908f1934d4f4a75" class="commit-link" target="_blank">
+              <i class="fab fa-github"></i>
+              查看提交
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.0.0 -->
+      <div class="timeline-item">
+        <div class="timeline-marker major">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <div class="version-card">
+          <div class="version-header">
+            <div class="version-info">
+              <span class="version-number">v1.0.0</span>
+              <span class="version-tag tag-major">首次发布</span>
+            </div>
+            <span class="version-date">
+              <i class="far fa-calendar"></i>
+              2024-03-19
+            </span>
+          </div>
+          <ul class="version-changes">
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-rocket"></i></span>
+              <span class="change-text">Love Graph 初次发布 🎉</span>
+            </li>
+            <li class="change-item">
+              <span class="change-icon added"><i class="fas fa-plus"></i></span>
+              <span class="change-text">功能包括探索和可视化关系连接</span>
+            </li>
+          </ul>
+          <div class="version-footer">
+            <a href="https://github.com/Last-emo-boy/RelationWeb/commit/64c45a0396b5ab95d30748896908f1934d4f4a75" class="commit-link" target="_blank">
+              <i class="fab fa-github"></i>
+              查看提交
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 底部 -->
+  <footer class="footer">
+    <p>© 2025 Love Graph. Made with 💕</p>
+  </footer>
+
+  <!-- 模态框 -->
+  <div id="modal202" class="modal">
+    <div class="modal-backdrop" onclick="hideModal('modal202')"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">v2.0.2 关系变动详情</h3>
+        <button class="modal-close" onclick="hideModal('modal202')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <h4><i class="fas fa-exchange-alt"></i> 变更为 EX_PARTNER</h4>
+          <ul class="modal-list">
+            <li>陈宣妤 ↔ 赵一玮</li>
+            <li>沈天阔 ↔ 夏印荷</li>
+            <li>邓屹阳 ↔ 李若宁</li>
+            <li>周易诚 ↔ 钱若瑜</li>
+            <li>曹禛 ↔ 张扬婧</li>
+          </ul>
+        </div>
+        <div class="modal-section">
+          <h4><i class="fas fa-heart"></i> 新增 CURRENT_PARTNER</h4>
+          <ul class="modal-list">
+            <li>施与姚 ↔ 孙佳择</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal132" class="modal">
+    <div class="modal-backdrop" onclick="hideModal('modal132')"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">v1.3.2 更新详情</h3>
+        <button class="modal-close" onclick="hideModal('modal132')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <h4><i class="fas fa-user-plus"></i> 新增节点</h4>
+          <ul class="modal-list">
+            <li>毕文凯 (男)</li>
+          </ul>
+        </div>
+        <div class="modal-section">
+          <h4><i class="fas fa-heart-broken"></i> 删除 EX_PARTNER (复合)</h4>
+          <ul class="modal-list">
+            <li>段佩辰 ↔ 施与姚</li>
+            <li>温伽睿 ↔ 方徐知</li>
+            <li>沈天阔 ↔ 夏印荷</li>
+          </ul>
+        </div>
+        <div class="modal-section">
+          <h4><i class="fas fa-heart"></i> 新增 CURRENT_PARTNER</h4>
+          <ul class="modal-list">
+            <li>段佩辰 ↔ 施与姚</li>
+            <li>温伽睿 ↔ 方徐知</li>
+            <li>沈天阔 ↔ 夏印荷</li>
+          </ul>
+        </div>
+        <div class="modal-section">
+          <h4><i class="fas fa-heart-broken"></i> 新增 EX_PARTNER</h4>
+          <ul class="modal-list">
+            <li>毕文凯 ↔ 陈辰</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal131" class="modal">
+    <div class="modal-backdrop" onclick="hideModal('modal131')"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">v1.3.1 更新详情</h3>
+        <button class="modal-close" onclick="hideModal('modal131')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <h4><i class="fas fa-user-plus"></i> 新增节点</h4>
+          <ul class="modal-list">
+            <li>姜艺蕾 (女)</li>
+          </ul>
+        </div>
+        <div class="modal-section">
+          <h4><i class="fas fa-heart"></i> 新增 CURRENT_PARTNER</h4>
+          <ul class="modal-list">
+            <li>姚博文 ↔ 姜艺蕾</li>
+          </ul>
+        </div>
+        <div class="modal-section">
+          <h4><i class="fas fa-minus-circle"></i> 删除 AFFECTION</h4>
+          <ul class="modal-list">
+            <li>姚博文 → 姜艺蕾</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal121" class="modal">
+    <div class="modal-backdrop" onclick="hideModal('modal121')"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">v1.2.1 更新详情</h3>
+        <button class="modal-close" onclick="hideModal('modal121')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <h4><i class="fas fa-user-plus"></i> 新增节点</h4>
+          <ul class="modal-list">
+            <li>吴思涵 (女)</li>
+            <li>陈昱桐 (男)</li>
+            <li>姚君竹 (男)</li>
+          </ul>
+        </div>
+        <div class="modal-section">
+          <h4><i class="fas fa-heart"></i> 新增 AFFECTION (32条)</h4>
+          <ul class="modal-list">
+            <li>周而成 → 陈辰</li>
+            <li>吴思涵 → 陈昱桐</li>
+            <li>陈予谦 → 王伊倩</li>
+            <li>陈予谦 → 方彬羽</li>
+            <li>陈予谦 → 李若宁</li>
+            <li>严雍寒 → 楼思越</li>
+            <li>何晨杰 → 楼思越</li>
+            <li>楼思越 → 何晨杰</li>
+            <li>姚君竹 → 王圣涵</li>
+            <li>王圣涵 → 韦子余</li>
+            <li>王圣涵 → 秦汉文</li>
+            <li>秦汉文 → 葛语歆</li>
+            <li>黄子宸 → 徐嘉一</li>
+            <li>段佩辰 → 张译匀</li>
+            <li>朱闻哲 → 林以衡</li>
+            <li>何晨杰 → 赵倩楠</li>
+            <li>彭泓钦 → 赵倩楠</li>
+            <li>黄子宸 → 万天艺</li>
+            <li>宋宇轩 → 葛恒嘉</li>
+            <li>楼文颉 → 王乐其</li>
+            <li>楼文颉 → 王煜菲</li>
+            <li>侯思成 → 陆朵朵</li>
+            <li>葛恒嘉 → 姜一寻</li>
+            <li>郑筑轩 → 方徐知</li>
+            <li>张津 → 陈宣妤</li>
+            <li>张津 → 李若宁</li>
+            <li>施展 → 方晨曦</li>
+            <li>温伽睿 → 张庭尔</li>
+            <li>倪哲晟 → 陈辰</li>
+            <li>秦汉文 → 于小格</li>
+            <li>赵虹昇 → 葛恒嘉</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 主题切换
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    updateThemeIcon();
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon();
+    });
+
+    function updateThemeIcon() {
+      const theme = document.documentElement.getAttribute('data-theme');
+      const icon = document.querySelector('#themeToggle i');
+      icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+    }
+
+    // 模态框控制
+    function showModal(id) {
+      document.getElementById(id).classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideModal(id) {
+      document.getElementById(id).classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    // ESC 关闭模态框
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.show').forEach(modal => {
+          modal.classList.remove('show');
+        });
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
 </body>
 </html>

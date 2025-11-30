@@ -1,768 +1,1303 @@
-// 全局共享函数，用于在节日彩蛋中显示通知
-window.showNotification = (message) => {
-  $('#toastBody').text(message);
-  $('#notification').toast('show');
+/**
+ * Love Graph - 主应用程序
+ * 现代化重构版本，使用 ES6+ 语法
+ */
+
+// ==========================================
+// 全局状态管理
+// ==========================================
+const AppState = {
+  cy: null,
+  fuse: null,
+  theme: localStorage.getItem('theme') || 'light',
+  sidebarOpen: window.innerWidth > 1024,
+  selectedNode: null,
+  highlightedPath: [],
+  compareNode: null, // 用于对比的节点
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  // ===============================
-  // 1. 初始化 Cytoscape
-  // ===============================
-  let currentTheme = 'light'; // 若需要主题切换，可留此变量
-  // 使用window.cy让其成为全局变量，以便节日彩蛋脚本可以访问
-  window.cy = cytoscape({
-    container: document.getElementById('cy'),
-    elements: elementsData, // 从 data.js 中引入的元素数据
+// ==========================================
+// 数据分析工具
+// ==========================================
+const Analytics = {
+  // 获取基础统计
+  getBasicStats() {
+    const cy = AppState.cy;
+    const nodes = cy.nodes();
+    const edges = cy.edges();
+    
+    const maleCount = nodes.filter('[gender = "男"]').length;
+    const femaleCount = nodes.filter('[gender = "女"]').length;
+    
+    const currentCount = edges.filter('[relationship = "CURRENT_PARTNER"]').length;
+    const exCount = edges.filter('[relationship = "EX_PARTNER"]').length;
+    const affectionCount = edges.filter('[relationship = "AFFECTION"]').length;
+    
+    // 计算连接度
+    const degrees = nodes.map(n => n.degree());
+    const avgDegree = degrees.length ? (degrees.reduce((a, b) => a + b, 0) / degrees.length).toFixed(1) : 0;
+    const maxDegree = degrees.length ? Math.max(...degrees) : 0;
+    
+    return {
+      totalNodes: nodes.length,
+      totalEdges: edges.length,
+      maleCount,
+      femaleCount,
+      currentCount,
+      exCount,
+      affectionCount,
+      avgDegree,
+      maxDegree
+    };
+  },
+  
+  // 获取连接度分布
+  getConnectionDistribution() {
+    const cy = AppState.cy;
+    const distribution = {};
+    
+    cy.nodes().forEach(node => {
+      const degree = node.degree();
+      const key = degree > 10 ? '10+' : String(degree);
+      distribution[key] = (distribution[key] || 0) + 1;
+    });
+    
+    // 按数字排序
+    const sorted = {};
+    const keys = Object.keys(distribution).sort((a, b) => {
+      if (a === '10+') return 1;
+      if (b === '10+') return -1;
+      return parseInt(a) - parseInt(b);
+    });
+    keys.forEach(k => sorted[k] = distribution[k]);
+    
+    return sorted;
+  },
+  
+  // 获取排行榜数据
+  getRankings(type = 'connections') {
+    const cy = AppState.cy;
+    let rankings = [];
+    
+    cy.nodes().forEach(node => {
+      const id = node.data('id');
+      const gender = node.data('gender');
+      const edges = node.connectedEdges();
+      
+      let value = 0;
+      let label = '';
+      
+      switch (type) {
+        case 'connections':
+          value = node.degree();
+          label = '个连接';
+          break;
+        case 'admirers':
+          // 被单向好感的数量
+          value = edges.filter(e => 
+            e.data('relationship') === 'AFFECTION' && e.data('target') === id
+          ).length;
+          label = '人喜欢';
+          break;
+        case 'exes':
+          // 前任数量
+          value = edges.filter(e => e.data('relationship') === 'EX_PARTNER').length;
+          label = '段前任';
+          break;
+      }
+      
+      rankings.push({ id, gender, value, label });
+    });
+    
+    // 排序并返回前15
+    return rankings.sort((a, b) => b.value - a.value).slice(0, 15);
+  },
+  
+  // 获取节点的关系详情
+  getNodeRelations(node) {
+    const id = node.data('id');
+    const edges = node.connectedEdges();
+    
+    const relations = {
+      current: [],
+      ex: [],
+      admirers: [],  // 喜欢我的
+      admiring: []   // 我喜欢的
+    };
+    
+    edges.forEach(edge => {
+      const source = edge.data('source');
+      const target = edge.data('target');
+      const relationship = edge.data('relationship');
+      const otherId = source === id ? target : source;
+      const otherNode = AppState.cy.getElementById(otherId);
+      const otherGender = otherNode.data('gender');
+      
+      const item = { id: otherId, gender: otherGender };
+      
+      switch (relationship) {
+        case 'CURRENT_PARTNER':
+          relations.current.push(item);
+          break;
+        case 'EX_PARTNER':
+          relations.ex.push(item);
+          break;
+        case 'AFFECTION':
+          if (source === id) {
+            relations.admiring.push(item);
+          } else {
+            relations.admirers.push(item);
+          }
+          break;
+      }
+    });
+    
+    return relations;
+  },
+  
+  // 查找两人的共同关系
+  findCommonConnections(nodeId1, nodeId2) {
+    const node1 = AppState.cy.getElementById(nodeId1);
+    const node2 = AppState.cy.getElementById(nodeId2);
+    
+    const neighbors1 = new Set(node1.neighborhood('node').map(n => n.data('id')));
+    const neighbors2 = new Set(node2.neighborhood('node').map(n => n.data('id')));
+    
+    const common = [...neighbors1].filter(id => neighbors2.has(id) && id !== nodeId1 && id !== nodeId2);
+    
+    return common.map(id => {
+      const node = AppState.cy.getElementById(id);
+      return {
+        id,
+        gender: node.data('gender')
+      };
+    });
+  }
+};
 
-    style: [
-      // 节点基础样式 (light 主题示例)
+// ==========================================
+// 工具函数
+// ==========================================
+const Utils = {
+  // 显示 Toast 通知
+  showToast(message, duration = 3000) {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    toastMessage.textContent = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, duration);
+  },
+  
+  // 显示模态框
+  showModal(title, content, buttons = []) {
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const modalFooter = document.getElementById('modalFooter');
+    
+    modalTitle.textContent = title;
+    modalBody.innerHTML = content;
+    
+    // 清空并添加按钮
+    modalFooter.innerHTML = '';
+    buttons.forEach(btn => {
+      const button = document.createElement('button');
+      button.className = `btn ${btn.class || 'btn-secondary'}`;
+      button.textContent = btn.text;
+      button.onclick = () => {
+        if (btn.onClick) btn.onClick();
+        if (btn.closeOnClick !== false) this.hideModal();
+      };
+      modalFooter.appendChild(button);
+    });
+    
+    modal.classList.add('show');
+  },
+  
+  // 隐藏模态框
+  hideModal() {
+    const modal = document.getElementById('modal');
+    modal.classList.remove('show');
+  },
+  
+  // 隐藏加载动画
+  hideLoader() {
+    const loader = document.getElementById('loader');
+    loader.classList.add('hidden');
+  },
+  
+  // 防抖函数
+  debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  },
+  
+  // 获取关系类型的中文名称
+  getRelationshipName(type) {
+    const names = {
+      'CURRENT_PARTNER': '现任伴侣',
+      'EX_PARTNER': '前任伴侣',
+      'AFFECTION': '单向好感'
+    };
+    return names[type] || type;
+  },
+  
+  // 获取关系类型的颜色
+  getRelationshipColor(type) {
+    const colors = {
+      'CURRENT_PARTNER': '#22c55e',
+      'EX_PARTNER': '#ef4444',
+      'AFFECTION': '#8b5cf6'
+    };
+    return colors[type] || '#94a3b8';
+  }
+};
+
+// 全局通知函数（兼容旧代码）
+window.showNotification = Utils.showToast.bind(Utils);
+
+// ==========================================
+// Cytoscape 配置
+// ==========================================
+const CytoscapeConfig = {
+  // 获取样式配置
+  getStyles() {
+    return [
+      // 节点基础样式
       {
         selector: 'node',
         style: {
-          'background-color': ele =>
-            ele.data('gender') === '男' ? '#1E90FF' : '#FF69B4',
-          label: 'data(id)',
+          'background-color': ele => ele.data('gender') === '男' ? '#3b82f6' : '#ec4899',
+          'background-opacity': 0.9,
+          'label': 'data(id)',
           'text-valign': 'center',
-          color: '#fff',
+          'text-halign': 'center',
+          'color': '#ffffff',
           'text-outline-width': 2,
-          'text-outline-color': '#888',
-          'font-size': '10px',
-          'text-wrap': 'wrap',
-          'text-max-width': 80,
-          width: '60px',
-          height: '60px',
+          'text-outline-color': ele => ele.data('gender') === '男' ? '#1e40af' : '#9d174d',
+          'font-size': '11px',
+          'font-weight': 500,
+          'width': 50,
+          'height': 50,
+          'border-width': 3,
+          'border-color': ele => ele.data('gender') === '男' ? '#60a5fa' : '#f472b6',
+          'transition-property': 'background-color, border-color, width, height',
+          'transition-duration': '0.2s',
+        },
+      },
+      // 节点悬停样式
+      {
+        selector: 'node:active',
+        style: {
+          'overlay-opacity': 0,
+        },
+      },
+      {
+        selector: 'node.hover',
+        style: {
+          'width': 60,
+          'height': 60,
+          'border-width': 4,
+          'z-index': 999,
         },
       },
       // 边基础样式
       {
         selector: 'edge',
         style: {
-          width: 3,
-          'line-color': '#ccc',
-          'target-arrow-color': '#ccc',
+          'width': 2,
+          'line-color': '#94a3b8',
+          'target-arrow-color': '#94a3b8',
           'target-arrow-shape': 'triangle',
           'curve-style': 'bezier',
-          label: 'data(relationship)',
-          'text-rotation': 'autorotate',
-          'text-margin-y': -20,
-          'font-size': '8px',
-          color: '#666',
-          'text-background-opacity': 1,
-          'text-background-color': '#fff',
-          'text-background-shape': 'roundrectangle',
-          'text-background-padding': 2,
-          'edge-text-rotation': 'autorotate',
+          'opacity': 0.7,
+          'transition-property': 'width, line-color, opacity',
+          'transition-duration': '0.2s',
         },
       },
-      // 不同 relationship 的边样式
+      // 现任关系
+      {
+        selector: 'edge[relationship = "CURRENT_PARTNER"]',
+        style: {
+          'line-color': '#22c55e',
+          'target-arrow-color': '#22c55e',
+          'width': 3,
+        },
+      },
+      // 前任关系
       {
         selector: 'edge[relationship = "EX_PARTNER"]',
         style: {
           'line-style': 'dashed',
-          'line-color': '#FF6347',
-          'target-arrow-color': '#FF6347',
+          'line-color': '#ef4444',
+          'target-arrow-color': '#ef4444',
         },
       },
-      {
-        selector: 'edge[relationship = "CURRENT_PARTNER"]',
-        style: {
-          'line-color': '#32CD32',
-          'target-arrow-color': '#32CD32',
-        },
-      },
+      // 单向好感
       {
         selector: 'edge[relationship = "AFFECTION"]',
         style: {
           'line-style': 'dotted',
-          'line-color': '#1E90FF',
-          'target-arrow-color': '#1E90FF',
+          'line-color': '#8b5cf6',
+          'target-arrow-color': '#8b5cf6',
         },
       },
       // 高亮样式
       {
         selector: '.highlighted',
         style: {
-          'background-color': '#FFD700',
-          'line-color': '#FFD700',
-          'target-arrow-color': '#FFD700',
-          'transition-property': 'background-color, line-color, target-arrow-color',
-          'transition-duration': '0.5s',
+          'background-color': '#fbbf24',
+          'line-color': '#fbbf24',
+          'target-arrow-color': '#fbbf24',
+          'border-color': '#f59e0b',
+          'width': 4,
+          'z-index': 999,
         },
       },
-      // 悬停时的样式
-      {
-        selector: 'node.hover',
-        style: {
-          'border-width': 6,
-          'border-color': '#FFD700',
-          'overlay-opacity': 0,
-        },
-      },
+      // 悬停边样式
       {
         selector: 'edge.hover',
         style: {
-          width: 6,
-          'line-color': '#FFD700',
-          'target-arrow-color': '#FFD700',
-          'overlay-opacity': 0,
+          'width': 4,
+          'opacity': 1,
+          'z-index': 998,
         },
       },
-      // （可选）暗黑主题示例，实际项目中可使用其他方式切换
+      // 淡出样式
       {
-        selector: 'node.dark-mode',
+        selector: '.faded',
         style: {
-          'background-color': ele =>
-            ele.data('gender') === '男' ? '#001F3F' : '#FF1493',
+          'opacity': 0.2,
         },
       },
+      // 选中样式
       {
-        selector: 'edge.dark-mode',
+        selector: 'node:selected',
         style: {
-          'line-color': '#666',
-          'target-arrow-color': '#666',
+          'border-color': '#fbbf24',
+          'border-width': 4,
         },
       },
-    ],
-
-    // 布局设定（cose-bilkent）
-    layout: {
-      name: 'cose-bilkent',
-      nodeDimensionsIncludeLabels: false,
-      refresh: 10,
-      fit: true,
-      padding: 15,
-      randomize: true,
-      idealEdgeLength: 100,
-      animate: 'end',
-      animationEasing: 'ease-in-out',
-      animationDuration: 1000,
-      infinite: true,
-      avoidOverlap: true,
-      allowNodesOverlap: false,
-      nodeOverlap: 15,
-      nodeRepulsion: 4500,
-      idealInterClusterEdgeLengthCoefficient: 1.4,
-      gravity: 0.1,
-      gravityRange: 3.8,
-      gravityCompound: 1.0,
-      gravityRangeCompound: 1.5,
-      nestingFactor: 0.1,
-    },
-
-    userZoomingEnabled: true,
-    userPanningEnabled: true,
-    boxSelectionEnabled: true,
-  });
-
-  // ===============================
-  // 2. panzoom 插件配置
-  // ===============================
-  cy.panzoom({
-    zoomFactor: 0.05,
-    minZoom: 0.1,
-    maxZoom: 10,
-    fitPadding: 50,
-    position: { left: '10px', top: '10px' },
-  });
-
-  // ===============================
-  // 3. qTip 提示框
-  // ===============================
-  cy.nodes().forEach(node => {
-    node.qtip({
-      content: () => `
-        <strong>${node.data('id')}</strong><br>
-        性别: ${node.data('gender')}
-      `,
-      position: { my: 'top center', at: 'bottom center' },
-      style: { classes: 'qtip-bootstrap' },
-      show: { solo: true },
-    });
-  });
-
-  cy.edges().forEach(edge => {
-    edge.qtip({
-      content: () => `
-        <strong>关系: ${edge.data('relationship')}</strong><br>
-        来源: ${edge.data('source')}<br>
-        目标: ${edge.data('target')}
-      `,
-      position: { my: 'top center', at: 'bottom center' },
-      style: { classes: 'qtip-dark' },
-      show: { solo: true },
-    });
-  });
-
-  // ===============================
-  // 4. contextMenus 右键菜单
-  // ===============================
-  cy.contextMenus({
-    menuItems: [
-      {
-        id: 'details',
-        content: '查看详情',
-        tooltipText: '查看节点或边的详情',
-        selector: 'node, edge',
-        onClickFunction: event => {
-          const { target } = event;
-          if (target.isNode()) {
-            showModalWithNodeDetails(target);
-          } else if (target.isEdge()) {
-            showModalWithEdgeDetails(target);
-          }
-        },
-        hasTrailingDivider: true,
-      },
-      {
-        id: 'highlight',
-        content: '高亮',
-        tooltipText: '高亮节点或边',
-        selector: 'node, edge',
-        onClickFunction: event => {
-          const { target } = event;
-          target.addClass('highlighted');
-        },
-      },
-      {
-        id: 'remove-highlight',
-        content: '取消高亮',
-        tooltipText: '取消高亮状态',
-        selector: 'node.highlighted, edge.highlighted',
-        onClickFunction: event => {
-          const { target } = event;
-          target.removeClass('highlighted');
-        },
-      },
-      {
-        id: 'remove-element',
-        content: '删除元素',
-        tooltipText: '从视图中删除此元素',
-        selector: 'node, edge',
-        onClickFunction: event => {
-          const { target } = event;
-          target.remove();
-          updateStats();
-        },
-        hasTrailingDivider: true,
-      },
-      {
-        id: 'center-view',
-        content: '聚焦到此节点',
-        tooltipText: '将节点居中到视窗',
-        selector: 'node',
-        onClickFunction: event => {
-          const node = event.target;
-          cy.animate({
-            fit: { eles: node, padding: 100 },
-          });
-        },
-      },
-    ],
-  });
-
-  // ===============================
-  // 5. 悬停高亮事件
-  // ===============================
-  cy.on('mouseover', 'node', evt => {
-    const node = evt.target;
-    node.addClass('hover');
-    node.connectedEdges().addClass('hover');
-  });
-  cy.on('mouseout', 'node', evt => {
-    const node = evt.target;
-    node.removeClass('hover');
-    node.connectedEdges().removeClass('hover');
-  });
-  cy.on('mouseover', 'edge', evt => {
-    evt.target.addClass('hover');
-  });
-  cy.on('mouseout', 'edge', evt => {
-    evt.target.removeClass('hover');
-  });
-
-  // ===============================
-  // 6. 模态框展示函数
-  // ===============================
-  function showModalWithNodeDetails(node) {
-    const content = `
-      <strong>${node.data('id')}</strong><br>
-      性别: ${node.data('gender')}
-    `;
-    $('#modalContent').html(content);
-    $('#detailsModal').modal('show');
-  }
-
-  function showModalWithEdgeDetails(edge) {
-    const content = `
-      <strong>关系: ${edge.data('relationship')}</strong><br>
-      来源: ${edge.data('source')}<br>
-      目标: ${edge.data('target')}
-    `;
-    $('#modalContent').html(content);
-    $('#detailsModal').modal('show');
-  }
-
-  // ===============================
-  // 7. 查找最短路径功能
-  // ===============================
-  document.getElementById('findPath').addEventListener('click', () => {
-    const startId = document.getElementById('nodeA').value.trim();
-    const endId = document.getElementById('nodeB').value.trim();
-    if (startId && endId) {
-      const shortestPath = cy.elements().aStar({
-        root: `[id='${startId}']`,
-        goal: `[id='${endId}']`,
-      });
-      cy.elements().removeClass('highlighted');
-      if (shortestPath.found) {
-        shortestPath.path.addClass('highlighted');
-      } else {
-        alert('未找到路径');
-      }
-    }
-  });
-
-  // ===============================
-  // 8. 实时搜索（模糊匹配）
-  // ===============================
-  const nodeList = cy.nodes().map(n => ({ id: n.data('id') }));
-  const fuse = new Fuse(nodeList, {
-    keys: ['id'],
-    includeScore: true,
-    threshold: 0.4, // 匹配阈值，可根据需要调优
-  });
-  const searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('input', () => {
-    const query = searchInput.value.trim();
-    cy.elements().style('display', 'element'); // 先重置为显示
-    if (!query) return; // 输入空则不做匹配
-
-    const results = fuse.search(query);
-    const matchedIds = results.map(r => r.item.id);
-
-    const matchedNodes = cy
-      .nodes()
-      .filter(n => matchedIds.includes(n.data('id')));
-
-    if (matchedNodes.length > 0) {
-      const connectedElems = matchedNodes
-        .connectedEdges()
-        .connectedNodes()
-        .add(matchedNodes.connectedEdges())
-        .add(matchedNodes);
-      cy.elements().not(connectedElems).style('display', 'none');
-    } else {
-      // 未匹配到任何节点，可提示
-      // alert('未匹配到任何节点');
-    }
-  });
-
-  // ===============================
-  // 9. 关系过滤功能
-  // ===============================
-  document.getElementById('filterBtn').addEventListener('click', () => {
-    const selectedRelationship = document
-      .getElementById('relationshipFilter')
-      .value.toLowerCase();
-    if (selectedRelationship) {
-      const targetEdges = cy
-        .edges()
-        .filter(
-          e => e.data('relationship').toLowerCase() === selectedRelationship
-        );
-      const connectedNodes = targetEdges.connectedNodes();
-      const elementsToShow = targetEdges.add(connectedNodes);
-      cy.elements().style('display', 'none');
-      elementsToShow.style('display', 'element');
-    } else {
-      cy.elements().style('display', 'element');
-    }
-  });
-
-  // ===============================
-  // 10. 重置视图功能
-  // ===============================
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    cy.elements().style('display', 'element');
-
-    cy.layout({
-      name: 'cose-bilkent',
-      fit: false,
-    }).run();
-
-    cy.once('layoutstop', () => {
-      cy.fit();
-    });
-  });
-
-  // ===============================
-  // 11. 导出图片功能
-  // ===============================
-  const exportImage = (format) => {
-    let dataUrl;
-    if (format === 'jpg') {
-      dataUrl = cy.jpg({
-        scale: 5,   // 可根据需要调大或调小
-        full: true,
-        bg: 'white' // 背景色可以自定义
-      });
-    } else {
-      dataUrl = cy.png({
-        scale: 5,
-        full: true,
-        bg: 'white'
-      });
-    }
-  
-    const downloadLink = document.createElement('a');
-    downloadLink.href = dataUrl;
-    downloadLink.download = `graph.${format}`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-  };
-  
-
-  // ===============================
-  // 12. 节点点击事件：显示节点信息
-  // ===============================
-  cy.on('tap', 'node', evt => {
-    const node = evt.target;
-    const connectedEdges = node.connectedEdges();
-    const affectionCount = connectedEdges.filter(
-      edge => edge.data('relationship') === 'AFFECTION'
-    ).length;
-    const otherRelationshipsCount = (connectedEdges.length - affectionCount) / 2;
-    const totalRelationships = affectionCount + otherRelationshipsCount;
-
-    const infoDiv = document.getElementById('info');
-    infoDiv.innerHTML = `
-      选中节点: ${node.data('id')}<br>
-      性别: ${node.data('gender')}<br>
-      单向关系数 (AFFECTION): ${affectionCount}<br>
-      双向关系数 (EX_PARTNER, CURRENT_PARTNER 等): ${otherRelationshipsCount}<br>
-      总关系数: ${totalRelationships}
-    `;
-  });
-
-  // ===============================
-  // 13. 更新统计信息
-  // ===============================
-  function updateStats() {
-    const totalNodes = cy.nodes().length;
-    const totalEdges = cy.edges().length;
-    const maleCount = cy.nodes('[gender = "男"]').length;
-    const femaleCount = cy.nodes('[gender = "女"]').length;
-
-    document.getElementById('stats').innerHTML = `
-      <p>总节点数: ${totalNodes}</p>
-      <p>总关系数: ${totalEdges}</p>
-      <p>男性: ${maleCount}</p>
-      <p>女性: ${femaleCount}</p>
-    `;
-  }  updateStats(); // 初始化时调用
-  // ===============================
-  // 特殊节日彩蛋
-  // ===============================
-  if (typeof applyFestivalEffects === 'function') {
-    // 应用节日彩蛋特效
-    const festivalApplied = applyFestivalEffects(cy);
-    
-    if (festivalApplied) {
-      console.log('节日彩蛋已激活!');
-      
-      // 如果是520特殊日期，应用额外的互动效果
-      if (typeof check520AndAddSpecialInteraction === 'function') {
-        const is520 = check520AndAddSpecialInteraction();
-        if (is520) {
-          console.log('520特殊互动已激活!');
-        }
-      }
-    }
-  }
-
-  // ===============================
-  // 14. 键盘快捷键
-  // ===============================
-  document.addEventListener('keydown', event => {
-    switch (event.key) {
-      case 'f': // 适应视图
-        cy.fit();
-        break;
-      case 'r': // 重置 Cytoscape 内部位置（保留缩放？）
-        cy.reset();
-        break;
-      case 's': // 导出图片 (默认png)
-        exportImage('png');
-        break;
-      default:
-        break;
-    }
-  });
-  // ===============================
-  // 15. Toast 通知
-  // ===============================
-  // 使用全局定义的通知函数
-  cy.on('select', 'node', evt => {
-    const { id } = evt.target.data();
-    showNotification(`选中节点: ${id}`);
-  });
-
-  // ===============================
-  // 16. 切换搜索框显示
-  // ===============================
-  document
-    .getElementById('toggleSearchBox')
-    .addEventListener('click', () => {
-      $('#searchBox').collapse('toggle');
-    });
-
-  // ===============================
-  // 17. (可选) 主题切换示例 (light/dark)
-  // ===============================
-  const themeToggleBtn = document.getElementById('themeToggleBtn');
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-      currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-      if (currentTheme === 'dark') {
-        cy.nodes().addClass('dark-mode');
-        cy.edges().addClass('dark-mode');
-        document.body.style.backgroundColor = '#333';
-        document.body.style.color = '#eee';
-      } else {
-        cy.nodes().removeClass('dark-mode');
-        cy.edges().removeClass('dark-mode');
-        document.body.style.backgroundColor = '';
-        document.body.style.color = '';
-      }
-    });
-  }
-
-  // =====================================================================
-  // ====================== 以下为新增的扩展示例 ===========================
-  // =====================================================================
-
-  // 1) 动态添加节点
-  const addNodeBtn = document.getElementById('addNodeBtn');
-  addNodeBtn.addEventListener('click', () => {
-    const newId = prompt('请输入新节点ID:');
-    if (!newId) return;
-    const newGender = prompt('请输入性别（男 / 女）:') || '男';
-    // 检查是否已存在该ID
-    if (cy.getElementById(newId).nonempty()) {
-      alert('该ID已存在，请使用其他ID！');
-      return;
-    }
-    cy.add({
-      group: 'nodes',
-      data: {
-        id: newId,
-        gender: newGender
-      },
-      position: {
-        x: cy.width() / 2,
-        y: cy.height() / 2
-      }
-    });
-    updateStats();
-  });
-
-  // 2) 动态添加边
-  const addEdgeBtn = document.getElementById('addEdgeBtn');
-  addEdgeBtn.addEventListener('click', () => {
-    const sourceId = prompt('请输入边的起始节点ID:');
-    const targetId = prompt('请输入边的目标节点ID:');
-    const relationship = prompt('请输入关系类型(如 CURRENT_PARTNER):') || 'AFFECTION';
-    if (!sourceId || !targetId) return;
-    if (!cy.getElementById(sourceId).nonempty() || !cy.getElementById(targetId).nonempty()) {
-      alert('起点或终点节点不存在！');
-      return;
-    }
-    cy.add({
-      group: 'edges',
-      data: {
-        source: sourceId,
-        target: targetId,
-        relationship: relationship
-      }
-    });
-    updateStats();
-  });
-
-  // 3) 编辑选中元素
-  const editElementBtn = document.getElementById('editElementBtn');
-  editElementBtn.addEventListener('click', () => {
-    const selected = cy.$(':selected'); // 获取当前选中的元素(节点或边)
-    if (selected.empty()) {
-      alert('请先选中一个节点或边再进行编辑。');
-      return;
-    }
-    if (selected.length > 1) {
-      alert('暂不支持同时编辑多个元素，请只选中一个。');
-      return;
-    }
-    if (selected.isNode()) {
-      const currentId = selected.data('id');
-      const newId = prompt('新的节点ID:', currentId);
-      const newGender = prompt('新的性别（男 / 女）:', selected.data('gender'));
-      if (newId && newId !== currentId && cy.getElementById(newId).empty()) {
-        selected.data('id', newId);
-      }
-      if (newGender) {
-        selected.data('gender', newGender);
-      }
-    } else {
-      // Edge
-      const rel = selected.data('relationship');
-      const newRel = prompt('新的关系类型:', rel) || rel;
-      selected.data('relationship', newRel);
-    }
-    updateStats();
-  });
-
-  // 4) 多布局切换
-  const layoutSelect = document.getElementById('layoutSelect');
-  layoutSelect.addEventListener('change', e => {
-    const layoutName = e.target.value;
-    cy.layout({ name: layoutName, fit: true, padding: 20 }).run();
-  });
-
-  // 5) 版本 / 时间切换（演示）
-  const versionSelect = document.getElementById('versionSelect');
-  versionSelect.addEventListener('change', e => {
-    const version = e.target.value;
-    if (!version) {
-      // 恢复原始数据
-      cy.elements().remove();
-      cy.add(elementsData);
-      cy.layout({ name: 'cose-bilkent', fit: true }).run();
-      updateStats();
-      return;
-    }
-    if (version === 'v1') {
-      // 示例：加载 version1 数据 (需你自己定义 version1Data)
-      // 这里仅演示做法，可在 data.js 里准备多个 dataset
-      cy.elements().remove();
-      cy.add(version1Data);
-      cy.layout({ name: 'cose-bilkent', fit: true }).run();
-      updateStats();
-    } else if (version === 'v2') {
-      // 示例：加载 version2 数据 (需你自己定义 version2Data)
-      cy.elements().remove();
-      cy.add(version2Data);
-      cy.layout({ name: 'cose-bilkent', fit: true }).run();
-      updateStats();
-    }
-  });
-
-  // ====================================
-  // 6) 社区检测 (基于连通分量的简单示例)
-  // ====================================
-  const detectCommunityBtn = document.getElementById('detectCommunityBtn');
-  detectCommunityBtn.addEventListener('click', () => {
-    // 1. 获取所有连通分量
-    const components = cy.elements().components();
-
-    // 2. 准备一个颜色数组，给不同社区分别着色
-    //    如果社区数多，可以再扩充这个数组，或随机生成颜色。
-    const colors = [
-      '#FF6961', // 浅红
-      '#77DD77', // 浅绿
-      '#AEC6CF', // 浅蓝
-      '#F49AC2', // 粉
-      '#FFD1DC', // 淡粉
-      '#CFCFC4', // 灰
-      '#F5CBA7', // 浅橙
-      '#B19CD9', // 淡紫
     ];
+  },
+  
+  // 获取布局配置
+  getLayout(name = 'cose-bilkent') {
+    const layouts = {
+      'cose-bilkent': {
+        name: 'cose-bilkent',
+        quality: 'proof',
+        nodeDimensionsIncludeLabels: true,
+        refresh: 30,
+        fit: true,
+        padding: 50,
+        randomize: true,
+        nodeRepulsion: 6000,
+        idealEdgeLength: 120,
+        edgeElasticity: 0.45,
+        nestingFactor: 0.1,
+        gravity: 0.15,
+        numIter: 2500,
+        tile: true,
+        animate: 'end',
+        animationDuration: 500,
+        animationEasing: 'ease-out',
+      },
+      'circle': {
+        name: 'circle',
+        fit: true,
+        padding: 50,
+        animate: true,
+        animationDuration: 500,
+      },
+      'grid': {
+        name: 'grid',
+        fit: true,
+        padding: 50,
+        animate: true,
+        animationDuration: 500,
+      },
+      'concentric': {
+        name: 'concentric',
+        fit: true,
+        padding: 50,
+        animate: true,
+        animationDuration: 500,
+        concentric: node => node.degree(),
+        levelWidth: () => 2,
+      },
+      'breadthfirst': {
+        name: 'breadthfirst',
+        fit: true,
+        padding: 50,
+        animate: true,
+        animationDuration: 500,
+        directed: false,
+      },
+    };
+    
+    return layouts[name] || layouts['cose-bilkent'];
+  }
+};
 
-    let colorIndex = 0;
-
-    // 3. 遍历每个社区 (连通分量)，给其节点上色
-    components.forEach((component, index) => {
-      // 如果颜色数组不够，会循环使用
-      const color = colors[colorIndex % colors.length];
-      colorIndex++;
-
-      component.nodes().forEach(node => {
-        // 直接覆盖背景色(会覆盖原先的 gender 颜色)
-        node.style('background-color', color);
-
-        // 可在 data 中存储社区 ID，若后续要用
-        node.data('community', index);
+// ==========================================
+// 应用程序类
+// ==========================================
+class LoveGraphApp {
+  constructor() {
+    this.init();
+  }
+  
+  // 初始化应用
+  async init() {
+    try {
+      this.initCytoscape();
+      this.initSearch();
+      this.bindEvents();
+      this.applyTheme();
+      this.updateStats();
+      
+      // 隐藏加载动画
+      setTimeout(() => {
+        Utils.hideLoader();
+      }, 500);
+      
+    } catch (error) {
+      console.error('初始化失败:', error);
+      Utils.showToast('应用加载失败，请刷新页面重试');
+    }
+  }
+  
+  // 初始化 Cytoscape
+  initCytoscape() {
+    AppState.cy = cytoscape({
+      container: document.getElementById('cy'),
+      elements: elementsData,
+      style: CytoscapeConfig.getStyles(),
+      layout: CytoscapeConfig.getLayout(),
+      userZoomingEnabled: true,
+      userPanningEnabled: true,
+      boxSelectionEnabled: true,
+      minZoom: 0.2,
+      maxZoom: 3,
+    });
+    
+    // 导出到全局
+    window.cy = AppState.cy;
+    
+    // 绑定 Cytoscape 事件
+    this.bindCytoscapeEvents();
+  }
+  
+  // 绑定 Cytoscape 事件
+  bindCytoscapeEvents() {
+    const cy = AppState.cy;
+    
+    // 节点悬停
+    cy.on('mouseover', 'node', evt => {
+      const node = evt.target;
+      node.addClass('hover');
+      node.connectedEdges().addClass('hover');
+      document.body.style.cursor = 'pointer';
+    });
+    
+    cy.on('mouseout', 'node', evt => {
+      const node = evt.target;
+      node.removeClass('hover');
+      node.connectedEdges().removeClass('hover');
+      document.body.style.cursor = 'default';
+    });
+    
+    // 边悬停
+    cy.on('mouseover', 'edge', evt => {
+      evt.target.addClass('hover');
+      document.body.style.cursor = 'pointer';
+    });
+    
+    cy.on('mouseout', 'edge', evt => {
+      evt.target.removeClass('hover');
+      document.body.style.cursor = 'default';
+    });
+    
+    // 节点点击
+    cy.on('tap', 'node', evt => {
+      const node = evt.target;
+      this.showNodeInfo(node);
+    });
+    
+    // 边点击
+    cy.on('tap', 'edge', evt => {
+      const edge = evt.target;
+      this.showEdgeInfo(edge);
+    });
+    
+    // 背景点击
+    cy.on('tap', evt => {
+      if (evt.target === cy) {
+        this.hideNodeInfo();
+      }
+    });
+  }
+  
+  // 初始化搜索
+  initSearch() {
+    const nodeList = AppState.cy.nodes().map(n => ({
+      id: n.data('id'),
+      gender: n.data('gender')
+    }));
+    
+    AppState.fuse = new Fuse(nodeList, {
+      keys: ['id'],
+      includeScore: true,
+      threshold: 0.4,
+    });
+  }
+  
+  // 绑定 DOM 事件
+  bindEvents() {
+    // 主题切换
+    document.getElementById('themeToggle')?.addEventListener('click', () => {
+      this.toggleTheme();
+    });
+    
+    // 侧边栏切换
+    document.getElementById('toggleSidebar')?.addEventListener('click', () => {
+      this.toggleSidebar();
+    });
+    
+    document.getElementById('closeSidebar')?.addEventListener('click', () => {
+      this.toggleSidebar(false);
+    });
+    
+    // 缩放控制
+    document.getElementById('zoomIn')?.addEventListener('click', () => {
+      AppState.cy.zoom(AppState.cy.zoom() * 1.2);
+    });
+    
+    document.getElementById('zoomOut')?.addEventListener('click', () => {
+      AppState.cy.zoom(AppState.cy.zoom() / 1.2);
+    });
+    
+    document.getElementById('fitView')?.addEventListener('click', () => {
+      AppState.cy.fit(undefined, 50);
+    });
+    
+    // 数据仪表盘
+    document.getElementById('showDashboard')?.addEventListener('click', () => {
+      this.toggleDashboard();
+    });
+    
+    document.getElementById('closeDashboard')?.addEventListener('click', () => {
+      this.toggleDashboard(false);
+    });
+    
+    // 排行榜
+    document.getElementById('showRanking')?.addEventListener('click', () => {
+      this.toggleRanking();
+    });
+    
+    document.getElementById('closeRanking')?.addEventListener('click', () => {
+      this.toggleRanking(false);
+    });
+    
+    // 排行榜标签切换
+    document.querySelectorAll('.ranking-tab').forEach(tab => {
+      tab.addEventListener('click', e => {
+        document.querySelectorAll('.ranking-tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        this.updateRankingContent(e.target.dataset.tab);
       });
     });
-
-    // 4. 弹窗或 Toast 提示
-    //   你可自行修改成 showNotification(...) 或其他UI提示
-    alert(`已检测到 ${components.length} 个连通分量，并成功为每个社区着色！`);
-  });
-
-
-  // 7) 高级查询示例（多点最短路径 / AI 解析）
-  const advancedQueryBtn = document.getElementById('advancedQueryBtn');
-  advancedQueryBtn.addEventListener('click', () => {
-    // 这里只是演示弹个窗 / 或输入
-    const query = prompt('输入查询指令(示例: "展示所有与 A 直接连接的节点")');
-    if (!query) return;
-
-    // 在此做简单的关键词分析 / 或请求后端 AI
-    // 这里只是示例
-    if (query.includes('与') && query.includes('直接连接')) {
-      // 假装提取节点ID
-      const splitted = query.split('与');
-      // 仅示例
-      const nodeId = splitted[1].replace('直接连接的节点', '').trim();
-      const centerNode = cy.getElementById(nodeId);
-      if (centerNode.empty()) {
-        alert('未找到该节点');
-        return;
+    
+    // 搜索
+    const searchInput = document.getElementById('searchInput');
+    searchInput?.addEventListener('input', Utils.debounce(e => {
+      this.handleSearch(e.target.value);
+    }, 200));
+    
+    // 路径查找
+    document.getElementById('findPath')?.addEventListener('click', () => {
+      this.findShortestPath();
+    });
+    
+    // 关系筛选
+    document.getElementById('relationFilter')?.addEventListener('change', e => {
+      this.filterByRelation(e.target.value);
+    });
+    
+    // 重置视图
+    document.getElementById('resetView')?.addEventListener('click', () => {
+      this.resetView();
+    });
+    
+    // 布局切换
+    document.querySelectorAll('.layout-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const layout = e.currentTarget.dataset.layout;
+        this.changeLayout(layout);
+        
+        // 更新按钮状态
+        document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+      });
+    });
+    
+    // 导出功能
+    document.getElementById('exportPng')?.addEventListener('click', () => {
+      this.exportImage('png');
+    });
+    
+    document.getElementById('exportJpg')?.addEventListener('click', () => {
+      this.exportImage('jpg');
+    });
+    
+    document.getElementById('exportJson')?.addEventListener('click', () => {
+      this.exportJson();
+    });
+    
+    // 关闭节点信息
+    document.getElementById('closeNodeInfo')?.addEventListener('click', () => {
+      this.hideNodeInfo();
+    });
+    
+    // 关闭模态框
+    document.getElementById('closeModal')?.addEventListener('click', () => {
+      Utils.hideModal();
+    });
+    
+    document.querySelector('.modal-backdrop')?.addEventListener('click', () => {
+      Utils.hideModal();
+    });
+    
+    // 键盘快捷键
+    document.addEventListener('keydown', e => {
+      this.handleKeyboard(e);
+    });
+    
+    // 响应式处理
+    window.addEventListener('resize', Utils.debounce(() => {
+      if (window.innerWidth > 1024 && !AppState.sidebarOpen) {
+        this.toggleSidebar(true);
       }
-      cy.elements().removeClass('highlighted');
-      const neighbors = centerNode.connectedEdges().connectedNodes();
-      neighbors.add(centerNode).addClass('highlighted');
-      alert(`已高亮 ${nodeId} 及其直接连接节点！`);
-    } else {
-      alert('自然语言解析尚未实现，你可以来帮我写hh。');
+    }, 200));
+  }
+  
+  // 切换主题
+  toggleTheme() {
+    AppState.theme = AppState.theme === 'light' ? 'dark' : 'light';
+    this.applyTheme();
+  }
+  
+  // 应用主题
+  applyTheme() {
+    document.documentElement.setAttribute('data-theme', AppState.theme);
+    localStorage.setItem('theme', AppState.theme);
+    
+    const themeIcon = document.querySelector('#themeToggle i');
+    if (themeIcon) {
+      themeIcon.className = AppState.theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
     }
-  });
-
-  // 8) 导入 / 导出 JSON
-  const importJsonBtn = document.getElementById('importJsonBtn');
-  const importJsonFile = document.getElementById('importJsonFile');
-  importJsonBtn.addEventListener('click', () => {
-    const file = importJsonFile.files[0];
-    if (!file) {
-      alert('请先选择一个 JSON 文件！');
+  }
+  
+  // 切换侧边栏
+  toggleSidebar(forceState) {
+    const sidebar = document.getElementById('sidebar');
+    AppState.sidebarOpen = forceState !== undefined ? forceState : !AppState.sidebarOpen;
+    
+    if (AppState.sidebarOpen) {
+      sidebar.classList.remove('collapsed');
+    } else {
+      sidebar.classList.add('collapsed');
+    }
+  }
+  
+  // 处理搜索
+  handleSearch(query) {
+    const resultsContainer = document.getElementById('searchResults');
+    
+    if (!query.trim()) {
+      resultsContainer.innerHTML = '';
+      AppState.cy.elements().removeClass('faded');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = e => {
-      try {
-        const jsonData = JSON.parse(e.target.result);
-        cy.elements().remove(); // 清空现有图
-        cy.add(jsonData);
-        cy.layout({ name: 'cose-bilkent', fit: true }).run();
-        updateStats();
-        alert('导入成功！');
-      } catch (err) {
-        alert('JSON 解析失败，请检查文件格式！');
-      }
+    
+    const results = AppState.fuse.search(query);
+    
+    // 显示搜索结果
+    resultsContainer.innerHTML = results.slice(0, 10).map(r => `
+      <div class="search-result-item" data-id="${r.item.id}">
+        <span class="gender-indicator ${r.item.gender === '男' ? 'male' : 'female'}"></span>
+        <span>${r.item.id}</span>
+      </div>
+    `).join('');
+    
+    // 绑定点击事件
+    resultsContainer.querySelectorAll('.search-result-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const nodeId = item.dataset.id;
+        this.focusOnNode(nodeId);
+      });
+    });
+    
+    // 高亮匹配的节点
+    const matchedIds = results.map(r => r.item.id);
+    const matchedNodes = AppState.cy.nodes().filter(n => matchedIds.includes(n.data('id')));
+    
+    if (matchedNodes.length > 0) {
+      AppState.cy.elements().addClass('faded');
+      matchedNodes.removeClass('faded');
+      matchedNodes.connectedEdges().removeClass('faded');
+      matchedNodes.connectedEdges().connectedNodes().removeClass('faded');
+    }
+  }
+  
+  // 聚焦到节点
+  focusOnNode(nodeId) {
+    const node = AppState.cy.getElementById(nodeId);
+    if (node.length > 0) {
+      AppState.cy.elements().removeClass('faded');
+      AppState.cy.animate({
+        fit: { eles: node, padding: 150 },
+        duration: 500,
+        easing: 'ease-out'
+      });
+      node.addClass('highlighted');
+      setTimeout(() => node.removeClass('highlighted'), 2000);
+    }
+  }
+  
+  // 查找最短路径
+  findShortestPath() {
+    const startId = document.getElementById('pathStart')?.value.trim();
+    const endId = document.getElementById('pathEnd')?.value.trim();
+    
+    if (!startId || !endId) {
+      Utils.showToast('请输入起始和目标节点');
+      return;
+    }
+    
+    const startNode = AppState.cy.getElementById(startId);
+    const endNode = AppState.cy.getElementById(endId);
+    
+    if (startNode.empty() || endNode.empty()) {
+      Utils.showToast('找不到指定的节点');
+      return;
+    }
+    
+    const result = AppState.cy.elements().aStar({
+      root: startNode,
+      goal: endNode,
+    });
+    
+    // 清除之前的高亮
+    AppState.cy.elements().removeClass('highlighted faded');
+    
+    if (result.found) {
+      AppState.cy.elements().addClass('faded');
+      result.path.removeClass('faded').addClass('highlighted');
+      
+      AppState.cy.animate({
+        fit: { eles: result.path, padding: 100 },
+        duration: 500
+      });
+      
+      Utils.showToast(`找到路径！距离：${result.path.length - 1} 步`);
+    } else {
+      Utils.showToast('未找到连接路径');
+    }
+  }
+  
+  // 按关系类型筛选
+  filterByRelation(relationType) {
+    if (!relationType) {
+      AppState.cy.elements().style('display', 'element');
+      return;
+    }
+    
+    const targetEdges = AppState.cy.edges().filter(e => 
+      e.data('relationship') === relationType
+    );
+    const connectedNodes = targetEdges.connectedNodes();
+    const elementsToShow = targetEdges.add(connectedNodes);
+    
+    AppState.cy.elements().style('display', 'none');
+    elementsToShow.style('display', 'element');
+    
+    AppState.cy.fit(elementsToShow, 50);
+  }
+  
+  // 重置视图
+  resetView() {
+    AppState.cy.elements().removeClass('highlighted faded');
+    AppState.cy.elements().style('display', 'element');
+    
+    AppState.cy.fit(undefined, 50);
+    
+    // 重置筛选器
+    const relationFilter = document.getElementById('relationFilter');
+    if (relationFilter) relationFilter.value = '';
+    
+    // 清除搜索
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = '';
+    document.getElementById('searchResults').innerHTML = '';
+    
+    Utils.showToast('视图已重置');
+  }
+  
+  // 切换布局
+  changeLayout(layoutName) {
+    const layout = CytoscapeConfig.getLayout(layoutName);
+    AppState.cy.layout(layout).run();
+    Utils.showToast(`已切换到${layoutName}布局`);
+  }
+  
+  // 显示节点信息
+  showNodeInfo(node) {
+    const nodeInfo = document.getElementById('nodeInfo');
+    const content = document.getElementById('nodeInfoContent');
+    
+    const id = node.data('id');
+    const gender = node.data('gender');
+    const connectedEdges = node.connectedEdges();
+    
+    // 计算关系统计
+    const currentCount = connectedEdges.filter(e => 
+      e.data('relationship') === 'CURRENT_PARTNER'
+    ).length / 2;
+    const exCount = connectedEdges.filter(e => 
+      e.data('relationship') === 'EX_PARTNER'
+    ).length / 2;
+    const affectionCount = connectedEdges.filter(e => 
+      e.data('relationship') === 'AFFECTION'
+    ).length;
+    
+    content.innerHTML = `
+      <div class="node-info-header">
+        <div class="node-info-avatar ${gender === '男' ? 'male' : 'female'}">
+          ${gender === '男' ? '👨' : '👩'}
+        </div>
+        <div>
+          <div class="node-info-name">${id}</div>
+          <div class="node-info-gender">${gender}</div>
+        </div>
+      </div>
+      <div class="node-info-stats">
+        <div class="node-stat">
+          <span class="node-stat-value">${Math.round(currentCount)}</span>
+          <span class="node-stat-label">现任</span>
+        </div>
+        <div class="node-stat">
+          <span class="node-stat-value">${Math.round(exCount)}</span>
+          <span class="node-stat-label">前任</span>
+        </div>
+        <div class="node-stat">
+          <span class="node-stat-value">${affectionCount}</span>
+          <span class="node-stat-label">好感</span>
+        </div>
+        <div class="node-stat">
+          <span class="node-stat-value">${connectedEdges.connectedNodes().length - 1}</span>
+          <span class="node-stat-label">连接数</span>
+        </div>
+      </div>
+    `;
+    
+    nodeInfo.classList.remove('hidden');
+    AppState.selectedNode = node;
+    
+    Utils.showToast(`已选中: ${id}`);
+  }
+  
+  // 显示边信息
+  showEdgeInfo(edge) {
+    const source = edge.data('source');
+    const target = edge.data('target');
+    const relationship = Utils.getRelationshipName(edge.data('relationship'));
+    
+    Utils.showToast(`${source} → ${target}: ${relationship}`);
+  }
+  
+  // 隐藏节点信息
+  hideNodeInfo() {
+    const nodeInfo = document.getElementById('nodeInfo');
+    nodeInfo.classList.add('hidden');
+    AppState.selectedNode = null;
+  }
+  
+  // 导出图片
+  exportImage(format) {
+    const options = {
+      scale: 3,
+      full: true,
+      bg: AppState.theme === 'dark' ? '#0f172a' : '#ffffff'
     };
-    reader.readAsText(file);
-  });
+    
+    const dataUrl = format === 'jpg' 
+      ? AppState.cy.jpg(options) 
+      : AppState.cy.png(options);
+    
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = `love-graph.${format}`;
+    link.click();
+    
+    Utils.showToast(`已导出 ${format.toUpperCase()} 图片`);
+  }
+  
+  // 导出 JSON
+  exportJson() {
+    const json = AppState.cy.json();
+    const dataStr = 'data:text/json;charset=utf-8,' + 
+      encodeURIComponent(JSON.stringify(json.elements, null, 2));
+    
+    const link = document.createElement('a');
+    link.href = dataStr;
+    link.download = 'love-graph-data.json';
+    link.click();
+    
+    Utils.showToast('已导出 JSON 数据');
+  }
+  
+  // 更新统计信息
+  updateStats() {
+    const cy = AppState.cy;
+    
+    document.getElementById('totalNodes').textContent = cy.nodes().length;
+    document.getElementById('totalEdges').textContent = cy.edges().length;
+    document.getElementById('maleCount').textContent = cy.nodes('[gender = "男"]').length;
+    document.getElementById('femaleCount').textContent = cy.nodes('[gender = "女"]').length;
+  }
+  
+  // 更新面板并排状态
+  updatePanelLayout() {
+    const dashboard = document.getElementById('dashboardPanel');
+    const ranking = document.getElementById('rankingPanel');
+    
+    if (!dashboard || !ranking) return;
+    
+    const dashboardOpen = !dashboard.classList.contains('hidden');
+    const rankingOpen = !ranking.classList.contains('hidden');
+    
+    // 如果两个面板都打开，给仪表盘添加 with-ranking 类使其左移
+    if (dashboardOpen && rankingOpen) {
+      dashboard.classList.add('with-ranking');
+    } else {
+      dashboard.classList.remove('with-ranking');
+    }
+  }
+  
+  // 切换数据仪表盘
+  toggleDashboard(show) {
+    const dashboard = document.getElementById('dashboardPanel');
+    if (!dashboard) return;
+    
+    const shouldShow = show !== undefined ? show : dashboard.classList.contains('hidden');
+    
+    if (shouldShow) {
+      this.updateDashboardContent();
+      dashboard.classList.remove('hidden');
+      // 添加内容动画
+      this.animateDashboardContent();
+    } else {
+      dashboard.classList.add('hidden');
+    }
+    
+    // 更新面板布局
+    this.updatePanelLayout();
+  }
+  
+  // 仪表盘内容动画
+  animateDashboardContent() {
+    const dashboard = document.getElementById('dashboardPanel');
+    if (!dashboard) return;
+    
+    // 为各个元素添加渐入动画
+    const overviewCards = dashboard.querySelectorAll('.overview-card');
+    const chartCards = dashboard.querySelectorAll('.chart-card');
+    
+    overviewCards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 100 + index * 80);
+    });
+    
+    chartCards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 300 + index * 100);
+    });
+  }
+  
+  // 更新仪表盘内容
+  updateDashboardContent() {
+    const cy = AppState.cy;
+    
+    // 更新概览卡片
+    const nodes = cy.nodes().length;
+    const edges = cy.edges().length;
+    const avgDegree = nodes > 0 ? (edges * 2 / nodes).toFixed(1) : 0;
+    const maxDegree = Math.max(...cy.nodes().map(n => n.connectedEdges().length), 0);
+    
+    document.getElementById('dashTotalNodes').textContent = nodes;
+    document.getElementById('dashTotalEdges').textContent = edges;
+    document.getElementById('dashAvgConnections').textContent = avgDegree;
+    document.getElementById('dashMaxConnections').textContent = maxDegree;
+    
+    // 关系类型统计
+    const relationStats = {
+      'CURRENT_PARTNER': 0,
+      'EX_PARTNER': 0,
+      'AFFECTION': 0
+    };
+    
+    cy.edges().forEach(edge => {
+      const rel = edge.data('relationship');
+      if (relationStats.hasOwnProperty(rel)) {
+        relationStats[rel]++;
+      }
+    });
+    
+    // 性别分布（使用 CSS 模拟饼图）
+    const genderChart = document.getElementById('genderChart');
+    const genderLegend = document.getElementById('genderLegend');
+    if (genderChart && genderLegend) {
+      const maleCount = cy.nodes('[gender = "男"]').length;
+      const femaleCount = cy.nodes('[gender = "女"]').length;
+      const total = maleCount + femaleCount;
+      const malePct = total > 0 ? Math.round((maleCount / total) * 100) : 0;
+      const femalePct = 100 - malePct;
+      
+      genderChart.style.background = `conic-gradient(
+        #3b82f6 0% ${malePct}%,
+        #ec4899 ${malePct}% 100%
+      )`;
+      
+      genderLegend.innerHTML = `
+        <div class="legend-item"><span class="legend-color" style="background: #3b82f6"></span>男 ${maleCount} (${malePct}%)</div>
+        <div class="legend-item"><span class="legend-color" style="background: #ec4899"></span>女 ${femaleCount} (${femalePct}%)</div>
+      `;
+    }
+    
+    // 关系类型分布（使用 CSS 模拟饼图）
+    const relationChart = document.getElementById('relationChart');
+    const relationLegend = document.getElementById('relationLegend');
+    if (relationChart && relationLegend) {
+      const total = Object.values(relationStats).reduce((a, b) => a + b, 0);
+      const currentPct = total > 0 ? Math.round((relationStats['CURRENT_PARTNER'] / total) * 100) : 0;
+      const exPct = total > 0 ? Math.round((relationStats['EX_PARTNER'] / total) * 100) : 0;
+      const affectionPct = 100 - currentPct - exPct;
+      
+      relationChart.style.background = `conic-gradient(
+        #6366f1 0% ${currentPct}%,
+        #f59e0b ${currentPct}% ${currentPct + exPct}%,
+        #ef4444 ${currentPct + exPct}% 100%
+      )`;
+      
+      relationLegend.innerHTML = `
+        <div class="legend-item"><span class="legend-color" style="background: #6366f1"></span>现任 ${relationStats['CURRENT_PARTNER']} (${currentPct}%)</div>
+        <div class="legend-item"><span class="legend-color" style="background: #f59e0b"></span>前任 ${relationStats['EX_PARTNER']} (${exPct}%)</div>
+        <div class="legend-item"><span class="legend-color" style="background: #ef4444"></span>好感 ${relationStats['AFFECTION']} (${affectionPct}%)</div>
+      `;
+    }
+    
+    // 连接度分布柱状图
+    const connectionDistChart = document.getElementById('connectionDistChart');
+    if (connectionDistChart) {
+      const degreeDist = {};
+      cy.nodes().forEach(node => {
+        const degree = node.connectedEdges().length;
+        degreeDist[degree] = (degreeDist[degree] || 0) + 1;
+      });
+      
+      const maxDegreeInDist = Math.max(...Object.keys(degreeDist).map(Number), 1);
+      const maxCount = Math.max(...Object.values(degreeDist), 1);
+      
+      let barsHtml = '';
+      for (let i = 0; i <= Math.min(maxDegreeInDist, 15); i++) {
+        const count = degreeDist[i] || 0;
+        const height = (count / maxCount) * 100;
+        barsHtml += `
+          <div class="bar-wrapper">
+            <div class="bar" style="height: ${height}%">
+              <span class="bar-value">${count}</span>
+            </div>
+            <span class="bar-label">${i}</span>
+          </div>
+        `;
+      }
+      
+      connectionDistChart.innerHTML = barsHtml;
+    }
+  }
+  
+  // 切换排行榜
+  toggleRanking(show) {
+    const ranking = document.getElementById('rankingPanel');
+    if (!ranking) return;
+    
+    const shouldShow = show !== undefined ? show : ranking.classList.contains('hidden');
+    
+    if (shouldShow) {
+      this.updateRankingContent('connections');
+      ranking.classList.remove('hidden');
+      // 添加内容动画
+      this.animateRankingContent();
+    } else {
+      ranking.classList.add('hidden');
+    }
+    
+    // 更新面板布局
+    this.updatePanelLayout();
+  }
+  
+  // 排行榜内容动画
+  animateRankingContent() {
+    const ranking = document.getElementById('rankingPanel');
+    if (!ranking) return;
+    
+    const items = ranking.querySelectorAll('.ranking-item');
+    items.forEach((item, index) => {
+      item.style.opacity = '0';
+      item.style.transform = 'translateX(20px)';
+      setTimeout(() => {
+        item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        item.style.opacity = '1';
+        item.style.transform = 'translateX(0)';
+      }, 100 + index * 50);
+    });
+  }
+  
+  // 更新排行榜内容
+  updateRankingContent(type) {
+    const rankingContent = document.getElementById('rankingContent');
+    if (!rankingContent) return;
+    
+    const cy = AppState.cy;
+    let rankings = [];
+    
+    if (type === 'connections') {
+      // 按连接数排名
+      rankings = cy.nodes().map(node => ({
+        id: node.data('id'),
+        gender: node.data('gender'),
+        value: node.connectedEdges().length,
+        label: '个连接'
+      })).sort((a, b) => b.value - a.value).slice(0, 10);
+    } else if (type === 'admirers') {
+      // 被喜欢数排名（被 AFFECTION 指向的次数）
+      const admiredCount = {};
+      cy.edges('[relationship = "AFFECTION"]').forEach(edge => {
+        const target = edge.data('target');
+        admiredCount[target] = (admiredCount[target] || 0) + 1;
+      });
+      
+      rankings = Object.entries(admiredCount)
+        .map(([id, count]) => {
+          const node = cy.getElementById(id);
+          return {
+            id,
+            gender: node.data('gender'),
+            value: count,
+            label: '人喜欢'
+          };
+        })
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 10);
+    } else if (type === 'exes') {
+      // 前任数排名
+      rankings = cy.nodes().map(node => {
+        const edges = node.connectedEdges();
+        const exCount = edges.filter(e => 
+          e.data('relationship') === 'EX_PARTNER'
+        ).length;
+        return {
+          id: node.data('id'),
+          gender: node.data('gender'),
+          value: Math.round(exCount / 2), // 因为每段关系被计算两次
+          label: '个前任'
+        };
+      }).filter(item => item.value > 0)
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 10);
+    }
+    
+    rankingContent.innerHTML = rankings.length > 0 
+      ? rankings.map((item, index) => `
+        <div class="ranking-item" data-id="${item.id}">
+          <span class="ranking-position ${index < 3 ? 'top-' + (index + 1) : ''}">${index + 1}</span>
+          <span class="ranking-name">
+            <span class="gender-indicator ${item.gender === '男' ? 'male' : 'female'}"></span>
+            ${item.id}
+          </span>
+          <span class="ranking-value">${item.value} ${item.label}</span>
+        </div>
+      `).join('')
+      : '<div class="no-data">暂无数据</div>';
+    
+    // 绑定点击事件
+    rankingContent.querySelectorAll('.ranking-item').forEach(item => {
+      item.addEventListener('click', () => {
+        this.focusOnNode(item.dataset.id);
+        this.toggleRanking(false);
+      });
+    });
+    
+    // 添加内容动画
+    this.animateRankingContent();
+  }
+  
+  // 处理键盘快捷键
+  handleKeyboard(e) {
+    // 如果在输入框中，不处理快捷键
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      return;
+    }
+    
+    switch (e.key.toLowerCase()) {
+      case 'f':
+        AppState.cy.fit(undefined, 50);
+        break;
+      case 'r':
+        this.resetView();
+        break;
+      case 's':
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          this.exportImage('png');
+        }
+        break;
+      case 'escape':
+        this.hideNodeInfo();
+        this.toggleDashboard(false);
+        this.toggleRanking(false);
+        Utils.hideModal();
+        break;
+    }
+  }
+}
 
-  const exportJsonBtn = document.getElementById('exportJsonBtn');
-  exportJsonBtn.addEventListener('click', () => {
-    const json = cy.json();
-    const dataStr =
-      'data:text/json;charset=utf-8,' +
-      encodeURIComponent(JSON.stringify(json.elements));
-    const downloadLink = document.createElement('a');
-    downloadLink.href = dataStr;
-    downloadLink.download = 'graph.json';
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-  });
+// ==========================================
+// 启动应用
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  new LoveGraphApp();
 });

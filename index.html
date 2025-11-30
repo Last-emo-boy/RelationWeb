@@ -1,467 +1,483 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <!-- 基本元信息 -->
   <meta charset="UTF-8" />
-  <title>Love Graph - Explore Relationship Connections</title>
-  <meta
-    name="description"
-    content="Discover and explore the complex web of relationships with Love Graph. Visualize connections, find paths, and search for nodes based on relationship types."
-  />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <!-- 自定义CSS 或者外部样式文件 -->
-  <link href="style.css" rel="stylesheet" />
-  <link href="festival_styles.css" rel="stylesheet" />
-  <link href="animation_styles.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Love Graph - 探索人际关系网络的可视化工具，发现连接、寻找路径、搜索节点" />
+  <meta name="keywords" content="关系图谱, 社交网络, 可视化, 人际关系" />
+  <meta name="author" content="Love Graph Team" />
+  <meta name="theme-color" content="#6366f1" />
+  
+  <title>Love Graph - 探索关系连接</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💕</text></svg>">
+  
+  <!-- 预加载关键资源 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- 字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- 图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- 样式文件 -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="animation_styles.css">
+  
+  <!-- Cytoscape 核心库 -->
+  <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+  
+  <!-- Cytoscape 布局插件 -->
+  <script src="https://unpkg.com/layout-base@2.0.1/layout-base.js"></script>
+  <script src="https://unpkg.com/cose-base@2.2.0/cose-base.js"></script>
+  <script src="https://unpkg.com/cytoscape-cose-bilkent@4.1.0/cytoscape-cose-bilkent.js"></script>
+  
+  <!-- Fuse.js 模糊搜索 -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
 
-  <!-- 字体和图标 (可根据需要选择其他版本) -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-    rel="stylesheet"
-  />
-
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-
-  <!-- Cytoscape.js 核心库 -->
-  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
-  <!-- Cytoscape 布局插件 (cose-bilkent) -->
-  <script src="https://unpkg.com/layout-base/layout-base.js"></script>
-  <script src="https://unpkg.com/cose-base/cose-base.js"></script>
-  <script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
-
-  <!-- Cytoscape 其他扩展 -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/cytoscape-panzoom/cytoscape-panzoom.css"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.css"
-  />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/cytoscape-context-menus/cytoscape-context-menus.css"
-  />
-
-  <!-- jQuery、qTip2、Cytoscape.js 扩展、jQuery UI -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.js"></script>
-  <script src="https://unpkg.com/cytoscape-panzoom/cytoscape-panzoom.js"></script>
-  <script src="https://unpkg.com/cytoscape-qtip/cytoscape-qtip.js"></script>
-  <script src="https://unpkg.com/cytoscape-context-menus/cytoscape-context-menus.js"></script>
-  <link
-    rel="stylesheet"
-    href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
-  />
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-  <!-- 引入 Fuse.js（用于模糊搜索）-->
-  <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
-
-  <style>
-    /* 你可以根据需求在这里或 style.css 进行更细致的美化 */
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f5f5f5;
-    }
-    .legend {
-      font-size: 0.9rem;
-    }
-    .legend-node {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      margin-right: 6px;
-      border-radius: 50%;
-      vertical-align: middle;
-    }
-    .male {
-      background-color: #1E90FF;
-    }
-    .female {
-      background-color: #FF69B4;
-    }
-    .legend-edge {
-      display: inline-block;
-      width: 30px;
-      height: 3px;
-      margin-right: 6px;
-      vertical-align: middle;
-      background-color: #999;
-    }
-    .ex-partner {
-      border-bottom: 2px dashed #FF6347;
-      background: none;
-    }
-    .current-partner {
-      background-color: #32CD32;
-    }
-    .affection {
-      border-bottom: 2px dotted #1E90FF;
-      background: none;
-    }
-    .centered-container {
-      text-align: center;
-    }
-    #cy {
-      width: 100%;
-      height: 600px;
-      background-color: #fff; /* 给 cytoscape 画布一个白底 */
-      border: 1px solid #ddd;
-    }
-    /* 面板卡片的简单美化 */
-    .panel-card {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 15px;
-      margin-bottom: 20px;
-    }
-  </style>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6V8G528D2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-J6V8G528D2');
+  </script>
 </head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-J6V8G528D2"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-J6V8G528D2');
-</script>
-
 <body>
-  <div class="container-fluid mt-4">
-    <div class="row justify-content-center">
-      <div class="col-lg-10 col-xl-8">
-        <!-- 标题和链接 -->
-        <header class="text-center mb-4">
-          <h1>Love Graph</h1>
-          <a href="Changelog.html" class="btn btn-primary my-3"
-            >View Changelog</a
-          >
-        </header>
+  <!-- 加载动画 -->
+  <div id="loader" class="loader">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <p class="loader-text">正在加载关系图谱...</p>
+    </div>
+  </div>
 
-        <!-- 图例和主题切换等小面板 -->
-        <div class="card mb-3">
-          <div class="card-body d-flex flex-column flex-sm-row justify-content-between">
-            <div id="legend" class="legend">
-              <h5>图例</h5>
-              <div><span class="legend-node male"></span> 男性</div>
-              <div><span class="legend-node female"></span> 女性</div>
-              <div><span class="legend-edge ex-partner"></span> 前任</div>
-              <div><span class="legend-edge current-partner"></span> 现任</div>
-              <div><span class="legend-edge affection"></span> 单向好感</div>
-            </div>
-            <!-- 主题切换按钮 (可选) -->
-            <div class="align-self-end">
-              <button id="themeToggleBtn" class="btn btn-secondary">
-                切换主题
-              </button>
-            </div>
-          </div>
+  <!-- 主容器 -->
+  <div class="app-container">
+    <!-- 头部导航 -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <span class="logo-icon">💕</span>
+          <h1 class="logo-text">Love Graph</h1>
         </div>
+        
+        <nav class="nav-actions">
+          <button id="themeToggle" class="btn btn-icon" title="切换主题">
+            <i class="fas fa-moon"></i>
+          </button>
+          <a href="Changelog.html" class="btn btn-outline">
+            <i class="fas fa-history"></i>
+            <span>更新日志</span>
+          </a>
+        </nav>
+      </div>
+    </header>
 
-        <!-- Graph 画布区域 -->
-        <div class="card mb-4">
-          <div class="card-body">
-            <div id="cy"></div>
-          </div>
-        </div>
-
-        <!-- 节点信息展示 -->
-        <div id="info" class="alert alert-info">
-          点击节点查看信息
-        </div>
-
-        <!-- 切换搜索框按钮 -->
-        <div class="centered-container mb-3">
-          <button
-            class="btn btn-info"
-            id="toggleSearchBox"
-            type="button"
-            data-toggle="collapse"
-            data-target="#searchBox"
-            aria-expanded="false"
-            aria-controls="searchBox"
-          >
-            切换搜索框
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <!-- 侧边栏 -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h2>控制面板</h2>
+          <button id="closeSidebar" class="btn btn-icon btn-sm">
+            <i class="fas fa-times"></i>
           </button>
         </div>
 
-        <!-- 搜索与过滤面板 -->
-        <div class="collapse" id="searchBox">
-          <div class="card card-body mb-3">
-            <h5 class="mb-3">搜索与过滤</h5>
-            <!-- 查找最短路径 -->
-            <div class="form-inline mb-2">
-              <input
-                type="text"
-                id="nodeA"
-                class="form-control mr-2"
-                placeholder="Start node ID"
-              />
-              <input
-                type="text"
-                id="nodeB"
-                class="form-control mr-2"
-                placeholder="End node ID"
-              />
-              <button id="findPath" class="btn btn-primary">
-                Find Path
-              </button>
-            </div>
-
-            <!-- 实时搜索(模糊搜索) -->
-            <div class="form-group">
-              <label for="searchInput">模糊搜索节点 (ID)</label>
-              <input
-                type="text"
-                id="searchInput"
-                class="form-control"
-                placeholder="Type to search (fuzzy)"
-              />
-            </div>
-
-            <!-- 关系过滤 -->
-            <div class="form-group">
-              <label for="relationshipFilter">关系过滤</label>
-              <select id="relationshipFilter" class="form-control">
-                <option value="">Select Relationship Type</option>
-                <option value="current_partner">Current Partner</option>
-                <option value="ex_partner">Ex Partner</option>
-                <option value="affection">Affection</option>
-              </select>
-            </div>
-            <button id="filterBtn" class="btn btn-info mb-2">
-              Apply Filter
-            </button>
-
-            <!-- 重置视图 -->
-            <button id="resetBtn" class="btn btn-warning mb-2">
-              Reset View
-            </button>
-
-            <!-- 导出图片 -->
-            <div class="d-inline-block ml-2">
-              <button id="exportPng" class="btn btn-success mb-2">
-                Export as PNG
-              </button>
-              <button id="exportJpg" class="btn btn-success mb-2">
-                Export as JPG
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 扩展功能区：添加节点、添加边、编辑元素、布局切换、版本切换、社区检测示例等 -->
-        <div class="card card-body mb-3">
-          <h5 class="mb-3">扩展功能 (示例)</h5>
-
-          <div class="btn-group mb-3" role="group" aria-label="Add/Edit">
-            <!-- 动态增删 + 编辑 -->
-            <button id="addNodeBtn" class="btn btn-sm btn-outline-primary">
-              添加节点
-            </button>
-            <button id="addEdgeBtn" class="btn btn-sm btn-outline-primary">
-              添加边
-            </button>
-            <button id="editElementBtn" class="btn btn-sm btn-outline-secondary">
-              编辑选中元素
-            </button>
-          </div>
-
-          <!-- 布局切换 -->
-          <div class="form-group">
-            <label for="layoutSelect">布局切换</label>
-            <select id="layoutSelect" class="form-control">
-              <option value="cose-bilkent" selected>cose-bilkent</option>
-              <option value="grid">grid</option>
-              <option value="circle">circle</option>
-              <option value="concentric">concentric</option>
-              <option value="breadthfirst">breadthfirst</option>
-              <option value="random">random</option>
-            </select>
-          </div>
-
-          <!-- 版本 / 时间切换示例 -->        <div class="form-group">
-            <label for="versionSelect">版本 / 时间切换（示例）</label>
-            <select id="versionSelect" class="form-control">
-              <option value="">请选择版本</option>
-              <option value="v1">版本1</option>
-              <option value="v2">版本2</option>
-            </select>
-          </div>
-          
-          <!-- 节日彩蛋测试 -->
-          <div class="form-group">
-            <label for="festivalSelect">节日彩蛋预览</label>
-            <select id="festivalSelect" class="form-control">
-              <option value="">选择节日彩蛋</option>
-              <option value="520">520表白日</option>
-              <option value="qixi">七夕节</option>
-              <option value="valentine">情人节</option>
-            </select>
-          </div>
-
-          <!-- 社区检测 & 高级查询按钮 -->
-          <div class="btn-group mb-3" role="group" aria-label="Advanced">
-            <button
-              id="detectCommunityBtn"
-              class="btn btn-sm btn-outline-warning"
-            >
-              社区检测（示例）
-            </button>
-            <button
-              id="advancedQueryBtn"
-              class="btn btn-sm btn-outline-dark"
-            >
-              高级查询示例
-            </button>
-          </div>
-
-          <!-- 导入 / 导出 JSON -->
-          <div class="form-group">
-            <label for="importJsonFile">导入 JSON 文件</label>
-            <input
-              id="importJsonFile"
-              type="file"
-              accept=".json"
-              class="form-control-file"
-            />
-          </div>
-          <div class="btn-group mb-2" role="group" aria-label="Import/Export">
-            <button id="importJsonBtn" class="btn btn-sm btn-outline-info">
-              导入 JSON
-            </button>
-            <button id="exportJsonBtn" class="btn btn-sm btn-outline-success">
-              导出 JSON
-            </button>
-          </div>
-        </div>
-
-        <!-- 评论区（基于 utteranc.es） -->
-        <div class="utterances-comments mb-4">
-          <script
-            src="https://utteranc.es/client.js"
-            repo="Last-emo-boy/RelationWeb"
-            issue-term="pathname"
-            theme="github-light"
-            crossorigin="anonymous"
-            async
-          ></script>
-        </div>
-
-        <!-- 社交分享按钮 (可在 share.js 中定义相关函数) -->
-        <div class="social-share-buttons text-center mb-4">
-          <a href="#" onclick="shareOnFacebook()" class="btn btn-sm btn-primary">
-            <i class="fab fa-facebook-f"></i> Share on Facebook
-          </a>
-          <a href="#" onclick="shareOnTwitter()" class="btn btn-sm btn-info">
-            <i class="fab fa-twitter"></i> Share on Twitter
-          </a>
-          <a href="#" onclick="shareOnLinkedIn()" class="btn btn-sm btn-success">
-            <i class="fab fa-linkedin-in"></i> Share on LinkedIn
-          </a>
-        </div>
-
-        <!-- 统计信息显示区 -->
-        <div id="stats" class="card card-body">
-          <!-- 动态更新统计信息 -->
-          <p>总节点数: 0</p>
-          <p>总关系数: 0</p>
-          <p>男性: 0</p>
-          <p>女性: 0</p>
-        </div>
-
-        <!-- 详情模态框 -->
-        <div
-          class="modal fade"
-          id="detailsModal"
-          tabindex="-1"
-          aria-labelledby="detailsModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="detailsModalLabel">详情</h5>
-                <button
-                  type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="关闭"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
+        <!-- 图例 -->
+        <section class="panel">
+          <h3 class="panel-title">
+            <i class="fas fa-palette"></i>
+            图例说明
+          </h3>
+          <div class="legend">
+            <div class="legend-section">
+              <h4>节点类型</h4>
+              <div class="legend-item">
+                <span class="legend-dot male"></span>
+                <span>男性</span>
               </div>
-              <div class="modal-body" id="modalContent">
-                <!-- 动态填充内容 -->
+              <div class="legend-item">
+                <span class="legend-dot female"></span>
+                <span>女性</span>
               </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-dismiss="modal"
-                >
-                  关闭
-                </button>
+            </div>
+            <div class="legend-section">
+              <h4>关系类型</h4>
+              <div class="legend-item">
+                <span class="legend-line current"></span>
+                <span>现任伴侣</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-line ex"></span>
+                <span>前任伴侣</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-line affection"></span>
+                <span>单向好感</span>
               </div>
             </div>
           </div>
+        </section>
+
+        <!-- 搜索面板 -->
+        <section class="panel">
+          <h3 class="panel-title">
+            <i class="fas fa-search"></i>
+            搜索节点
+          </h3>
+          <div class="search-box">
+            <input type="text" id="searchInput" class="input" placeholder="输入名字搜索...">
+            <i class="fas fa-search search-icon"></i>
+          </div>
+          <div id="searchResults" class="search-results"></div>
+        </section>
+
+        <!-- 路径查找 -->
+        <section class="panel">
+          <h3 class="panel-title">
+            <i class="fas fa-route"></i>
+            路径查找
+          </h3>
+          <div class="form-group">
+            <input type="text" id="pathStart" class="input" placeholder="起始节点">
+          </div>
+          <div class="form-group">
+            <input type="text" id="pathEnd" class="input" placeholder="目标节点">
+          </div>
+          <button id="findPath" class="btn btn-primary btn-block">
+            <i class="fas fa-project-diagram"></i>
+            查找最短路径
+          </button>
+        </section>
+
+        <!-- 筛选器 -->
+        <section class="panel">
+          <h3 class="panel-title">
+            <i class="fas fa-filter"></i>
+            关系筛选
+          </h3>
+          <div class="form-group">
+            <select id="relationFilter" class="select">
+              <option value="">显示所有关系</option>
+              <option value="CURRENT_PARTNER">仅显示现任</option>
+              <option value="EX_PARTNER">仅显示前任</option>
+              <option value="AFFECTION">仅显示好感</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <select id="genderFilter" class="select">
+              <option value="">显示所有性别</option>
+              <option value="男">仅显示男性</option>
+              <option value="女">仅显示女性</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="filter-label">按连接数筛选</label>
+            <div class="range-container">
+              <input type="range" id="connectionFilter" class="range-input" min="0" max="20" value="0">
+              <span id="connectionValue" class="range-value">≥ 0</span>
+            </div>
+          </div>
+          <button id="resetView" class="btn btn-secondary btn-block">
+            <i class="fas fa-undo"></i>
+            重置视图
+          </button>
+        </section>
+
+        <!-- 布局选择 -->
+        <section class="panel">
+          <h3 class="panel-title">
+            <i class="fas fa-sitemap"></i>
+            布局方式
+          </h3>
+          <div class="layout-options">
+            <button class="layout-btn active" data-layout="cose-bilkent">
+              <i class="fas fa-project-diagram"></i>
+              <span>力导向</span>
+            </button>
+            <button class="layout-btn" data-layout="circle">
+              <i class="fas fa-circle-notch"></i>
+              <span>圆形</span>
+            </button>
+            <button class="layout-btn" data-layout="grid">
+              <i class="fas fa-th"></i>
+              <span>网格</span>
+            </button>
+            <button class="layout-btn" data-layout="concentric">
+              <i class="fas fa-bullseye"></i>
+              <span>同心圆</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- 导出功能 -->
+        <section class="panel">
+          <h3 class="panel-title">
+            <i class="fas fa-download"></i>
+            导出图片
+          </h3>
+          <div class="export-buttons">
+            <button id="exportPng" class="btn btn-outline btn-sm">
+              <i class="fas fa-image"></i>
+              PNG
+            </button>
+            <button id="exportJpg" class="btn btn-outline btn-sm">
+              <i class="fas fa-file-image"></i>
+              JPG
+            </button>
+            <button id="exportJson" class="btn btn-outline btn-sm">
+              <i class="fas fa-code"></i>
+              JSON
+            </button>
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- 图谱区域 -->
+      <div class="graph-container">
+        <!-- 工具栏 -->
+        <div class="toolbar">
+          <button id="toggleSidebar" class="btn btn-icon" title="打开控制面板">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="toolbar-divider"></div>
+          <button id="zoomIn" class="btn btn-icon" title="放大">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button id="zoomOut" class="btn btn-icon" title="缩小">
+            <i class="fas fa-minus"></i>
+          </button>
+          <button id="fitView" class="btn btn-icon" title="适应视图">
+            <i class="fas fa-expand"></i>
+          </button>
+          <div class="toolbar-divider"></div>
+          <button id="showDashboard" class="btn btn-icon" title="数据仪表盘">
+            <i class="fas fa-chart-pie"></i>
+          </button>
+          <button id="showRanking" class="btn btn-icon" title="排行榜">
+            <i class="fas fa-trophy"></i>
+          </button>
         </div>
 
-        <!-- Toast 通知 -->
-        <div
-          aria-live="polite"
-          aria-atomic="true"
-          style="position: fixed; top: 20px; right: 20px; z-index: 9999;"
-        >
-          <div
-            id="notification"
-            class="toast"
-            role="alert"
-            data-delay="3000"
-            data-autohide="true"
-          >
-            <div class="toast-header">
-              <strong class="mr-auto">通知</strong>
-              <small class="text-muted">刚刚</small>
-              <button
-                type="button"
-                class="ml-2 mb-1 close"
-                data-dismiss="toast"
-                aria-label="关闭"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="toast-body" id="toastBody">
-              <!-- 动态填充内容 -->
-            </div>
+        <!-- Cytoscape 画布 -->
+        <div id="cy" class="graph-canvas"></div>
+
+        <!-- 节点信息卡（增强版） -->
+        <div id="nodeInfo" class="node-info-card hidden">
+          <button id="closeNodeInfo" class="close-btn">
+            <i class="fas fa-times"></i>
+          </button>
+          <div id="nodeInfoContent"></div>
+          <div class="node-info-tabs">
+            <button class="node-tab active" data-tab="relations">关系列表</button>
+            <button class="node-tab" data-tab="network">关系网络</button>
+          </div>
+          <div id="nodeRelationsList" class="node-relations-list"></div>
+          <div class="node-info-actions">
+            <button id="focusNeighbors" class="btn btn-sm btn-outline">
+              <i class="fas fa-eye"></i> 查看关系网
+            </button>
+            <button id="findCommon" class="btn btn-sm btn-outline">
+              <i class="fas fa-users"></i> 找共同好友
+            </button>
+          </div>
+        </div>
+
+        <!-- 统计面板 -->
+        <div class="stats-panel">
+          <div class="stat-item">
+            <span class="stat-value" id="totalNodes">0</span>
+            <span class="stat-label">节点</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="totalEdges">0</span>
+            <span class="stat-label">关系</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="maleCount">0</span>
+            <span class="stat-label">男性</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="femaleCount">0</span>
+            <span class="stat-label">女性</span>
           </div>
         </div>
       </div>
+    </main>
+
+    <!-- 底部 -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>© 2025 Love Graph. Made with 💕</p>
+        </div>
+        <div class="footer-right">
+          <div class="social-share">
+            <span>分享：</span>
+            <button onclick="shareOnTwitter()" class="share-btn" title="分享到 Twitter">
+              <i class="fab fa-twitter"></i>
+            </button>
+            <button onclick="shareOnFacebook()" class="share-btn" title="分享到 Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </button>
+            <button onclick="shareOnLinkedIn()" class="share-btn" title="分享到 LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </button>
+            <button onclick="copyLink()" class="share-btn" title="复制链接">
+              <i class="fas fa-link"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 通知组件 -->
+  <div id="toast" class="toast">
+    <div class="toast-icon">
+      <i class="fas fa-info-circle"></i>
     </div>
-  </div>  <!-- 引入数据文件 (elementsData), 主逻辑, 以及分享逻辑 -->
+    <div class="toast-content">
+      <p id="toastMessage"></p>
+    </div>
+  </div>
+
+  <!-- 模态框 -->
+  <div id="modal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modalTitle">标题</h3>
+        <button id="closeModal" class="close-btn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+      <div id="modalFooter" class="modal-footer"></div>
+    </div>
+  </div>
+
+  <!-- 数据仪表盘 -->
+  <div id="dashboardPanel" class="dashboard-panel hidden">
+    <div class="dashboard-header">
+      <h3><i class="fas fa-chart-pie"></i> 数据仪表盘</h3>
+      <button id="closeDashboard" class="close-btn">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="dashboard-content">
+      <!-- 概览卡片 -->
+      <div class="dashboard-overview">
+        <div class="overview-card">
+          <div class="overview-icon" style="background: linear-gradient(135deg, #6366f1, #818cf8);">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="overview-info">
+            <span class="overview-value" id="dashTotalNodes">0</span>
+            <span class="overview-label">总人数</span>
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-icon" style="background: linear-gradient(135deg, #ec4899, #f472b6);">
+            <i class="fas fa-heart"></i>
+          </div>
+          <div class="overview-info">
+            <span class="overview-value" id="dashTotalEdges">0</span>
+            <span class="overview-label">总关系</span>
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-icon" style="background: linear-gradient(135deg, #22c55e, #4ade80);">
+            <i class="fas fa-link"></i>
+          </div>
+          <div class="overview-info">
+            <span class="overview-value" id="dashAvgConnections">0</span>
+            <span class="overview-label">平均连接</span>
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-icon" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+            <i class="fas fa-crown"></i>
+          </div>
+          <div class="overview-info">
+            <span class="overview-value" id="dashMaxConnections">0</span>
+            <span class="overview-label">最大连接</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 图表区域 -->
+      <div class="dashboard-charts">
+        <!-- 性别分布 -->
+        <div class="chart-card">
+          <h4>性别分布</h4>
+          <div class="chart-container">
+            <div id="genderChart" class="donut-chart"></div>
+            <div class="chart-legend" id="genderLegend"></div>
+          </div>
+        </div>
+        
+        <!-- 关系类型分布 -->
+        <div class="chart-card">
+          <h4>关系类型分布</h4>
+          <div class="chart-container">
+            <div id="relationChart" class="donut-chart"></div>
+            <div class="chart-legend" id="relationLegend"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 连接度分布 -->
+      <div class="chart-card full-width">
+        <h4>连接度分布</h4>
+        <div id="connectionDistChart" class="bar-chart"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 排行榜面板 -->
+  <div id="rankingPanel" class="ranking-panel hidden">
+    <div class="ranking-header">
+      <h3><i class="fas fa-trophy"></i> 排行榜</h3>
+      <button id="closeRanking" class="close-btn">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="ranking-tabs">
+      <button class="ranking-tab active" data-tab="connections">连接数最多</button>
+      <button class="ranking-tab" data-tab="admirers">被好感最多</button>
+      <button class="ranking-tab" data-tab="exes">前任最多</button>
+    </div>
+    <div class="ranking-content" id="rankingContent">
+      <!-- 动态填充 -->
+    </div>
+  </div>
+
+  <!-- 评论区 -->
+  <div class="comments-section">
+    <div class="comments-container">
+      <h3>💬 评论区</h3>
+      <script src="https://utteranc.es/client.js"
+        repo="Last-emo-boy/RelationWeb"
+        issue-term="pathname"
+        theme="preferred-color-scheme"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+  </div>
+
+  <!-- 脚本 -->
   <script src="data.js"></script>
-  <script src="easter_eggs.js"></script>
   <script src="main.js"></script>
   <script src="share.js"></script>
-
-  <!-- Bootstrap 与 Popper.js (用于模态框、Toast 等) -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
-  ></script>
-  <script
-    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-  ></script>
 </body>
 </html>
