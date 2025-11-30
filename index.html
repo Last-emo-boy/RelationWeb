@@ -107,156 +107,161 @@
           </button>
         </div>
 
-        <!-- 图例 -->
-        <section class="panel">
-          <h3 class="panel-title">
-            <i class="fas fa-palette"></i>
-            图例说明
-          </h3>
-          <div class="legend">
-            <div class="legend-section">
-              <h4>节点类型</h4>
-              <div class="legend-item">
-                <span class="legend-dot male"></span>
-                <span>男性</span>
+        <!-- 侧边栏内容区 - 独立滚动 -->
+        <div class="sidebar-content">
+          <!-- 图例 -->
+          <section class="panel">
+            <h3 class="panel-title">
+              <i class="fas fa-palette"></i>
+              图例说明
+            </h3>
+            <div class="legend">
+              <div class="legend-section">
+                <h4>节点类型</h4>
+                <div class="legend-item">
+                  <span class="legend-dot male"></span>
+                  <span>男性</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot female"></span>
+                  <span>女性</span>
+                </div>
               </div>
-              <div class="legend-item">
-                <span class="legend-dot female"></span>
-                <span>女性</span>
+              <div class="legend-section">
+                <h4>关系类型</h4>
+                <div class="legend-item">
+                  <span class="legend-line current"></span>
+                  <span>现任伴侣</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-line ex"></span>
+                  <span>前任伴侣</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-line affection"></span>
+                  <span>单向好感</span>
+                </div>
               </div>
             </div>
-            <div class="legend-section">
-              <h4>关系类型</h4>
-              <div class="legend-item">
-                <span class="legend-line current"></span>
-                <span>现任伴侣</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-line ex"></span>
-                <span>前任伴侣</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-line affection"></span>
-                <span>单向好感</span>
-              </div>
+          </section>
+
+          <!-- 搜索面板 -->
+          <section class="panel">
+            <h3 class="panel-title">
+              <i class="fas fa-search"></i>
+              搜索节点
+            </h3>
+            <div class="search-box">
+              <input type="text" id="searchInput" class="input" placeholder="输入名字搜索...">
+              <i class="fas fa-search search-icon"></i>
             </div>
-          </div>
-        </section>
+            <div id="searchResults" class="search-results"></div>
+          </section>
 
-        <!-- 搜索面板 -->
-        <section class="panel">
-          <h3 class="panel-title">
-            <i class="fas fa-search"></i>
-            搜索节点
-          </h3>
-          <div class="search-box">
-            <input type="text" id="searchInput" class="input" placeholder="输入名字搜索...">
-            <i class="fas fa-search search-icon"></i>
-          </div>
-          <div id="searchResults" class="search-results"></div>
-        </section>
-
-        <!-- 路径查找 -->
-        <section class="panel">
-          <h3 class="panel-title">
-            <i class="fas fa-route"></i>
-            路径查找
-          </h3>
-          <div class="form-group">
-            <input type="text" id="pathStart" class="input" placeholder="起始节点">
-          </div>
-          <div class="form-group">
-            <input type="text" id="pathEnd" class="input" placeholder="目标节点">
-          </div>
-          <button id="findPath" class="btn btn-primary btn-block">
-            <i class="fas fa-project-diagram"></i>
-            查找最短路径
-          </button>
-        </section>
-
-        <!-- 筛选器 -->
-        <section class="panel">
-          <h3 class="panel-title">
-            <i class="fas fa-filter"></i>
-            关系筛选
-          </h3>
-          <div class="form-group">
-            <select id="relationFilter" class="select">
-              <option value="">显示所有关系</option>
-              <option value="CURRENT_PARTNER">仅显示现任</option>
-              <option value="EX_PARTNER">仅显示前任</option>
-              <option value="AFFECTION">仅显示好感</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <select id="genderFilter" class="select">
-              <option value="">显示所有性别</option>
-              <option value="男">仅显示男性</option>
-              <option value="女">仅显示女性</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="filter-label">按连接数筛选</label>
-            <div class="range-container">
-              <input type="range" id="connectionFilter" class="range-input" min="0" max="20" value="0">
-              <span id="connectionValue" class="range-value">≥ 0</span>
+          <!-- 路径查找 -->
+          <section class="panel">
+            <h3 class="panel-title">
+              <i class="fas fa-route"></i>
+              路径查找
+            </h3>
+            <div class="form-group">
+              <input type="text" id="pathStart" class="input" placeholder="起始节点">
             </div>
-          </div>
-          <button id="resetView" class="btn btn-secondary btn-block">
-            <i class="fas fa-undo"></i>
-            重置视图
-          </button>
-        </section>
-
-        <!-- 布局选择 -->
-        <section class="panel">
-          <h3 class="panel-title">
-            <i class="fas fa-sitemap"></i>
-            布局方式
-          </h3>
-          <div class="layout-options">
-            <button class="layout-btn active" data-layout="cose-bilkent">
+            <div class="form-group">
+              <input type="text" id="pathEnd" class="input" placeholder="目标节点">
+            </div>
+            <button id="findPath" class="btn btn-primary btn-block">
               <i class="fas fa-project-diagram"></i>
-              <span>力导向</span>
+              查找最短路径
             </button>
-            <button class="layout-btn" data-layout="circle">
-              <i class="fas fa-circle-notch"></i>
-              <span>圆形</span>
-            </button>
-            <button class="layout-btn" data-layout="grid">
-              <i class="fas fa-th"></i>
-              <span>网格</span>
-            </button>
-            <button class="layout-btn" data-layout="concentric">
-              <i class="fas fa-bullseye"></i>
-              <span>同心圆</span>
-            </button>
-          </div>
-        </section>
+          </section>
 
-        <!-- 导出功能 -->
-        <section class="panel">
-          <h3 class="panel-title">
-            <i class="fas fa-download"></i>
-            导出图片
-          </h3>
-          <div class="export-buttons">
-            <button id="exportPng" class="btn btn-outline btn-sm">
-              <i class="fas fa-image"></i>
-              PNG
+          <!-- 筛选器 -->
+          <section class="panel">
+            <h3 class="panel-title">
+              <i class="fas fa-filter"></i>
+              关系筛选
+            </h3>
+            <div class="form-group">
+              <select id="relationFilter" class="select">
+                <option value="">显示所有关系</option>
+                <option value="CURRENT_PARTNER">仅显示现任</option>
+                <option value="EX_PARTNER">仅显示前任</option>
+                <option value="AFFECTION">仅显示好感</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select id="genderFilter" class="select">
+                <option value="">显示所有性别</option>
+                <option value="男">仅显示男性</option>
+                <option value="女">仅显示女性</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="filter-label">按连接数筛选</label>
+              <div class="range-container">
+                <input type="range" id="connectionFilter" class="range-input" min="0" max="20" value="0">
+                <span id="connectionValue" class="range-value">≥ 0</span>
+              </div>
+            </div>
+            <button id="resetView" class="btn btn-secondary btn-block">
+              <i class="fas fa-undo"></i>
+              重置视图
             </button>
-            <button id="exportJpg" class="btn btn-outline btn-sm">
-              <i class="fas fa-file-image"></i>
-              JPG
-            </button>
-            <button id="exportJson" class="btn btn-outline btn-sm">
-              <i class="fas fa-code"></i>
-              JSON
-            </button>
-          </div>
-        </section>
+          </section>
 
+          <!-- 布局选择 -->
+          <section class="panel">
+            <h3 class="panel-title">
+              <i class="fas fa-sitemap"></i>
+              布局方式
+            </h3>
+            <div class="layout-options">
+              <button class="layout-btn active" data-layout="cose-bilkent">
+                <i class="fas fa-project-diagram"></i>
+                <span>力导向</span>
+              </button>
+              <button class="layout-btn" data-layout="circle">
+                <i class="fas fa-circle-notch"></i>
+                <span>圆形</span>
+              </button>
+              <button class="layout-btn" data-layout="grid">
+                <i class="fas fa-th"></i>
+                <span>网格</span>
+              </button>
+              <button class="layout-btn" data-layout="concentric">
+                <i class="fas fa-bullseye"></i>
+                <span>同心圆</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- 导出功能 -->
+          <section class="panel">
+            <h3 class="panel-title">
+              <i class="fas fa-download"></i>
+              导出图片
+            </h3>
+            <div class="export-buttons">
+              <button id="exportPng" class="btn btn-outline btn-sm">
+                <i class="fas fa-image"></i>
+                PNG
+              </button>
+              <button id="exportJpg" class="btn btn-outline btn-sm">
+                <i class="fas fa-file-image"></i>
+                JPG
+              </button>
+              <button id="exportJson" class="btn btn-outline btn-sm">
+                <i class="fas fa-code"></i>
+                JSON
+              </button>
+            </div>
+          </section>
+        </div>
       </aside>
+
+      <!-- 侧边栏遮罩（移动端） -->
+      <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
 
       <!-- 图谱区域 -->
       <div class="graph-container">
@@ -282,6 +287,41 @@
           <button id="showRanking" class="btn btn-icon" title="排行榜">
             <i class="fas fa-trophy"></i>
           </button>
+          <div class="toolbar-divider"></div>
+          <button id="showComments" class="btn btn-icon" title="评论区">
+            <i class="fas fa-comments"></i>
+          </button>
+          <div class="share-button-wrapper">
+            <button id="showShare" class="btn btn-icon" title="分享">
+              <i class="fas fa-share-alt"></i>
+            </button>
+            <!-- 分享弹窗 -->
+            <div id="sharePopup" class="share-popup hidden">
+              <div class="share-popup-header">分享到</div>
+              <div class="share-popup-content">
+                <button class="share-option" data-platform="weibo" title="微博">
+                  <i class="fab fa-weibo"></i>
+                  <span>微博</span>
+                </button>
+                <button class="share-option" data-platform="twitter" title="Twitter">
+                  <i class="fab fa-twitter"></i>
+                  <span>Twitter</span>
+                </button>
+                <button class="share-option" data-platform="wechat" title="微信">
+                  <i class="fab fa-weixin"></i>
+                  <span>微信</span>
+                </button>
+                <button class="share-option" data-platform="qq" title="QQ">
+                  <i class="fab fa-qq"></i>
+                  <span>QQ</span>
+                </button>
+                <button class="share-option" data-platform="copy" title="复制链接">
+                  <i class="fas fa-link"></i>
+                  <span>复制链接</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Cytoscape 画布 -->
@@ -329,32 +369,6 @@
         </div>
       </div>
     </main>
-
-    <!-- 底部 -->
-    <footer class="footer">
-      <div class="footer-content">
-        <div class="footer-left">
-          <p>© 2025 Love Graph. Made with 💕</p>
-        </div>
-        <div class="footer-right">
-          <div class="social-share">
-            <span>分享：</span>
-            <button onclick="shareOnTwitter()" class="share-btn" title="分享到 Twitter">
-              <i class="fab fa-twitter"></i>
-            </button>
-            <button onclick="shareOnFacebook()" class="share-btn" title="分享到 Facebook">
-              <i class="fab fa-facebook-f"></i>
-            </button>
-            <button onclick="shareOnLinkedIn()" class="share-btn" title="分享到 LinkedIn">
-              <i class="fab fa-linkedin-in"></i>
-            </button>
-            <button onclick="copyLink()" class="share-btn" title="复制链接">
-              <i class="fas fa-link"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </footer>
   </div>
 
   <!-- 通知组件 -->
@@ -478,17 +492,25 @@
     </div>
   </div>
 
-  <!-- 评论区 -->
-  <div class="comments-section">
-    <div class="comments-container">
-      <h3>💬 评论区</h3>
-      <script src="https://utteranc.es/client.js"
-        repo="Last-emo-boy/RelationWeb"
-        issue-term="pathname"
-        theme="preferred-color-scheme"
-        crossorigin="anonymous"
-        async>
-      </script>
+  <!-- 评论区模态框 -->
+  <div id="commentsModal" class="comments-modal hidden">
+    <div class="comments-modal-backdrop"></div>
+    <div class="comments-modal-content">
+      <div class="comments-modal-header">
+        <h3><i class="fas fa-comments"></i> 评论区</h3>
+        <button id="closeComments" class="close-btn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="comments-modal-body">
+        <script src="https://utteranc.es/client.js"
+          repo="Last-emo-boy/RelationWeb"
+          issue-term="pathname"
+          theme="preferred-color-scheme"
+          crossorigin="anonymous"
+          async>
+        </script>
+      </div>
     </div>
   </div>
 

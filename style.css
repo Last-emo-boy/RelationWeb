@@ -68,7 +68,7 @@
   /* 布局 */
   --sidebar-width: 320px;
   --header-height: 64px;
-  --footer-height: 56px;
+  --footer-height: 0px;
   
   /* 字体 */
   --font-sans: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -116,7 +116,7 @@ body {
   color: var(--color-text);
   background-color: var(--color-bg);
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -191,12 +191,14 @@ img {
 }
 
 /* ========================================
-   应用容器
+   应用容器 - 固定视口布局
    ======================================== */
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 /* ========================================
@@ -254,13 +256,15 @@ img {
 }
 
 /* ========================================
-   主内容区
+   主内容区 - 填满剩余空间
    ======================================== */
 .main-content {
   flex: 1;
   display: flex;
   position: relative;
   overflow: hidden;
+  height: calc(100vh - var(--header-height));
+  height: calc(100dvh - var(--header-height));
 }
 
 /* ========================================
@@ -270,10 +274,12 @@ img {
   width: var(--sidebar-width);
   background: var(--color-surface);
   border-right: 1px solid var(--color-border);
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
   transition: transform var(--transition-normal), width var(--transition-normal);
   flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 .sidebar.collapsed {
@@ -288,15 +294,48 @@ img {
   justify-content: space-between;
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: 0;
   background: var(--color-surface);
-  z-index: 10;
+  flex-shrink: 0;
 }
 
 .sidebar-header h2 {
   font-size: 1.125rem;
   font-weight: 600;
+}
+
+/* 侧边栏内容区 - 独立滚动 */
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+/* 侧边栏遮罩（移动端） */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  top: var(--header-height);
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-overlay:not(.hidden) {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block;
+  }
+  
+  .sidebar-overlay.hidden {
+    pointer-events: none;
+  }
 }
 
 /* ========================================
@@ -614,13 +653,15 @@ img {
 }
 
 /* ========================================
-   图谱容器
+   图谱容器 - 占满剩余空间
    ======================================== */
 .graph-container {
   flex: 1;
   position: relative;
   background: var(--color-bg);
   overflow: hidden;
+  /* 独立的触摸滚动行为 */
+  overscroll-behavior: contain;
 }
 
 /* ========================================
@@ -647,12 +688,15 @@ img {
 }
 
 /* ========================================
-   画布
+   画布 - Cytoscape 容器
    ======================================== */
 .graph-canvas {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  /* 触摸设备上禁用默认滚动，让 Cytoscape 处理 */
+  touch-action: none;
 }
 
 /* ========================================
@@ -783,54 +827,329 @@ img {
 }
 
 /* ========================================
-   底部
+   评论区弹窗
    ======================================== */
-.footer {
-  height: var(--footer-height);
+.comments-panel {
+  position: fixed;
+  top: var(--header-height);
+  right: 0;
+  bottom: 0;
+  width: 480px;
+  max-width: 100%;
   background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xl);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.footer-content {
+.comments-panel:not(.hidden) {
+  transform: translateX(0);
+}
+
+.comments-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
-  padding: 0 var(--space-6);
-  max-width: 1920px;
-  margin: 0 auto;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
-.footer-left p {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-}
-
-.social-share {
+.comments-panel-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
 
-.social-share span {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
+.comments-panel-header h3 i {
+  color: var(--color-primary);
 }
 
-.share-btn {
-  width: 32px;
-  height: 32px;
+.comments-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+/* ========================================
+   分享弹窗
+   ======================================== */
+.share-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  z-index: 300;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-6);
+  min-width: 320px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.share-panel:not(.hidden) {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.share-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 299;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.share-panel-backdrop:not(.hidden) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.share-panel h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--space-5);
+  text-align: center;
+}
+
+.share-buttons {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.share-btn-large {
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-full);
-  color: var(--color-text-secondary);
-  transition: all var(--transition-fast);
+  border-radius: var(--radius-lg);
+  font-size: 1.5rem;
+  color: white;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.share-btn:hover {
-  background: var(--color-bg-secondary);
+.share-btn-large:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.share-btn-large.twitter {
+  background: #1da1f2;
+}
+
+.share-btn-large.facebook {
+  background: #4267b2;
+}
+
+.share-btn-large.linkedin {
+  background: #0077b5;
+}
+
+.share-btn-large.copy {
+  background: var(--color-primary);
+}
+
+.share-panel-footer {
+  text-align: center;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.share-panel-footer p {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* ========================================
+   工具栏分享弹窗
+   ======================================== */
+.share-button-wrapper {
+  position: relative;
+}
+
+.share-popup {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-border);
+  min-width: 180px;
+  z-index: 300;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.share-popup.hidden {
+  display: none;
+}
+
+.share-popup:not(.hidden) {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.share-popup.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.share-popup-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.share-popup-content {
+  padding: var(--space-2);
+}
+
+.share-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+  font-size: 0.875rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.share-option:hover {
+  background: var(--color-surface-hover);
+}
+
+.share-option i {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.share-option[data-platform="weibo"] i {
+  color: #e6162d;
+}
+
+.share-option[data-platform="twitter"] i {
+  color: #1da1f2;
+}
+
+.share-option[data-platform="wechat"] i {
+  color: #07c160;
+}
+
+.share-option[data-platform="qq"] i {
+  color: #12b7f5;
+}
+
+.share-option[data-platform="copy"] i {
   color: var(--color-primary);
+}
+
+/* ========================================
+   评论模态框（全屏覆盖）
+   ======================================== */
+.comments-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.comments-modal.hidden {
+  display: none;
+}
+
+.comments-modal:not(.hidden) {
+  display: flex;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.comments-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.comments-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.comments-modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 640px;
+  max-height: 80vh;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  transform: scale(0.95) translateY(20px);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.comments-modal.active .comments-modal-content {
+  transform: scale(1) translateY(0);
+}
+
+.comments-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.comments-modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.comments-modal-header h3 i {
+  color: var(--color-primary);
+}
+
+.comments-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
 }
 
 /* ========================================
@@ -993,6 +1312,22 @@ img {
   :root {
     --sidebar-width: 100%;
     --header-height: 56px;
+    --footer-height: 0px;
+  }
+  
+  /* 移动端整体布局 */
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh; /* 动态视口高度，解决移动端地址栏问题 */
+  }
+  
+  .main-content {
+    flex: 1;
+    height: calc(100vh - var(--header-height));
+    height: calc(100dvh - var(--header-height));
+    min-height: 0;
   }
   
   .header-content {
@@ -1007,26 +1342,56 @@ img {
     display: none;
   }
   
+  /* 移动端侧边栏覆盖 */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: var(--header-height);
+    bottom: 0;
+    height: auto;
+    z-index: 100;
+    box-shadow: var(--shadow-xl);
+    transform: translateX(-100%);
+  }
+  
+  .sidebar:not(.collapsed) {
+    transform: translateX(0);
+  }
+  
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+    width: var(--sidebar-width);
+  }
+  
+  /* 图表容器占满 */
+  .graph-container {
+    width: 100%;
+    height: 100%;
+  }
+  
   .stats-panel {
     gap: var(--space-4);
     padding: var(--space-2) var(--space-4);
+    bottom: var(--space-3);
   }
   
   .stat-value {
     font-size: 1rem;
   }
   
-  .footer-content {
-    flex-direction: column;
-    justify-content: center;
-    gap: var(--space-2);
-    text-align: center;
+  /* 移动端隐藏 footer 或简化 */
+  .footer {
+    display: none;
   }
   
   .node-info-card {
     width: calc(100% - var(--space-8));
     left: var(--space-4);
     right: var(--space-4);
+    top: auto;
+    bottom: calc(var(--space-4) + 60px);
+    max-height: 50vh;
+    overflow-y: auto;
   }
   
   .toolbar {
@@ -1037,6 +1402,7 @@ img {
   .dashboard-panel,
   .ranking-panel {
     width: 100%;
+    top: var(--header-height);
   }
   
   /* 小屏幕上不并排显示 */

@@ -580,6 +580,20 @@ class LoveGraphApp {
       this.toggleSidebar(false);
     });
     
+    // 侧边栏遮罩点击关闭
+    document.getElementById('sidebarOverlay')?.addEventListener('click', () => {
+      this.toggleSidebar(false);
+    });
+    
+    // 窗口大小变化时处理
+    window.addEventListener('resize', () => {
+      // 如果从移动端切换到桌面端，恢复滚动
+      if (window.innerWidth > 768) {
+        document.body.style.overflow = '';
+        document.getElementById('sidebarOverlay')?.classList.add('hidden');
+      }
+    });
+    
     // 缩放控制
     document.getElementById('zoomIn')?.addEventListener('click', () => {
       AppState.cy.zoom(AppState.cy.zoom() * 1.2);
@@ -618,6 +632,43 @@ class LoveGraphApp {
         e.target.classList.add('active');
         this.updateRankingContent(e.target.dataset.tab);
       });
+    });
+    
+    // 评论区
+    document.getElementById('showComments')?.addEventListener('click', () => {
+      this.toggleComments(true);
+    });
+    
+    document.getElementById('closeComments')?.addEventListener('click', () => {
+      this.toggleComments(false);
+    });
+    
+    document.querySelector('.comments-modal-backdrop')?.addEventListener('click', () => {
+      this.toggleComments(false);
+    });
+    
+    // 分享弹窗
+    document.getElementById('showShare')?.addEventListener('click', e => {
+      e.stopPropagation();
+      this.toggleSharePopup();
+    });
+    
+    // 分享选项点击
+    document.querySelectorAll('.share-option').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const platform = e.currentTarget.dataset.platform;
+        this.handleShare(platform);
+        this.toggleSharePopup(false);
+      });
+    });
+    
+    // 点击其他地方关闭分享弹窗
+    document.addEventListener('click', e => {
+      const sharePopup = document.getElementById('sharePopup');
+      const shareBtn = document.getElementById('showShare');
+      if (sharePopup && !sharePopup.contains(e.target) && !shareBtn?.contains(e.target)) {
+        sharePopup.classList.add('hidden');
+      }
     });
     
     // 搜索
@@ -713,12 +764,20 @@ class LoveGraphApp {
   // 切换侧边栏
   toggleSidebar(forceState) {
     const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
     AppState.sidebarOpen = forceState !== undefined ? forceState : !AppState.sidebarOpen;
     
     if (AppState.sidebarOpen) {
       sidebar.classList.remove('collapsed');
+      overlay?.classList.remove('hidden');
+      // 移动端禁止背景滚动
+      if (window.innerWidth <= 768) {
+        document.body.style.overflow = 'hidden';
+      }
     } else {
       sidebar.classList.add('collapsed');
+      overlay?.classList.add('hidden');
+      document.body.style.overflow = '';
     }
   }
   
@@ -1169,6 +1228,85 @@ class LoveGraphApp {
     this.updatePanelLayout();
   }
   
+  // 切换评论区
+  toggleComments(show) {
+    const modal = document.getElementById('commentsModal');
+    if (!modal) return;
+    
+    const shouldShow = show !== undefined ? show : modal.classList.contains('hidden');
+    
+    if (shouldShow) {
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      // 入场动画
+      requestAnimationFrame(() => {
+        modal.classList.add('active');
+      });
+    } else {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      // 等待动画结束后隐藏
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+  }
+  
+  // 切换分享弹窗
+  toggleSharePopup(show) {
+    const popup = document.getElementById('sharePopup');
+    if (!popup) return;
+    
+    const shouldShow = show !== undefined ? show : popup.classList.contains('hidden');
+    
+    if (shouldShow) {
+      popup.classList.remove('hidden');
+      // 入场动画
+      requestAnimationFrame(() => {
+        popup.classList.add('active');
+      });
+    } else {
+      popup.classList.remove('active');
+      setTimeout(() => {
+        popup.classList.add('hidden');
+      }, 200);
+    }
+  }
+  
+  // 处理分享
+  handleShare(platform) {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent('Love Graph - 探索复杂的人物关系网络');
+    const description = encodeURIComponent('一个可视化展示人物关系的互动网络图');
+    
+    let shareUrl = '';
+    
+    switch (platform) {
+      case 'weibo':
+        shareUrl = `https://service.weibo.com/share/share.php?url=${url}&title=${title}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+        break;
+      case 'wechat':
+        Utils.showNotification('请截图或复制链接分享到微信', 'info');
+        break;
+      case 'qq':
+        shareUrl = `https://connect.qq.com/widget/shareqq/index.html?url=${url}&title=${title}&summary=${description}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          Utils.showNotification('链接已复制到剪贴板', 'success');
+        }).catch(() => {
+          Utils.showNotification('复制失败，请手动复制', 'error');
+        });
+        break;
+    }
+  }
+  
   // 排行榜内容动画
   animateRankingContent() {
     const ranking = document.getElementById('rankingPanel');
@@ -1289,6 +1427,8 @@ class LoveGraphApp {
         this.hideNodeInfo();
         this.toggleDashboard(false);
         this.toggleRanking(false);
+        this.toggleComments(false);
+        this.toggleSharePopup(false);
         Utils.hideModal();
         break;
     }
