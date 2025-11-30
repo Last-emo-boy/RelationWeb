@@ -1308,11 +1308,167 @@ img {
   }
 }
 
+/* ========================================
+   移动端底部导航栏（默认隐藏）
+   ======================================== */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  z-index: 200;
+  padding: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--color-text-muted);
+  font-size: 0.65rem;
+  padding: var(--space-2) 0;
+  transition: color var(--transition-fast);
+  position: relative;
+}
+
+.mobile-nav-item i {
+  font-size: 1.25rem;
+  transition: transform var(--transition-fast);
+}
+
+.mobile-nav-item.active,
+.mobile-nav-item:active {
+  color: var(--color-primary);
+}
+
+.mobile-nav-item:active i {
+  transform: scale(0.9);
+}
+
+/* 中间的圆形按钮 */
+.mobile-nav-center {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  margin-top: -20px;
+  background: var(--color-primary);
+  color: white !important;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-lg);
+}
+
+.mobile-nav-center i {
+  font-size: 1.5rem;
+}
+
+.mobile-nav-center:active {
+  background: var(--color-primary-dark);
+  transform: scale(0.95);
+}
+
+/* ========================================
+   移动端更多菜单
+   ======================================== */
+.mobile-more-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.mobile-more-menu:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-more-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.mobile-more-content {
+  position: relative;
+  width: 100%;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-more-menu:not(.hidden) .mobile-more-content {
+  transform: translateY(0);
+}
+
+.mobile-more-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobile-more-header span {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.mobile-more-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.mobile-more-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  transition: background var(--transition-fast);
+}
+
+.mobile-more-item:active {
+  background: var(--color-surface-hover);
+}
+
+.mobile-more-item i {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+.mobile-more-item span {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* ========================================
+   移动端响应式
+   ======================================== */
 @media (max-width: 768px) {
   :root {
     --sidebar-width: 100%;
     --header-height: 56px;
     --footer-height: 0px;
+    --mobile-nav-height: 60px;
   }
   
   /* 移动端整体布局 */
@@ -1320,14 +1476,16 @@ img {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    min-height: 100dvh; /* 动态视口高度，解决移动端地址栏问题 */
+    min-height: 100dvh;
   }
   
+  /* 给底部导航留空间 */
   .main-content {
     flex: 1;
-    height: calc(100vh - var(--header-height));
-    height: calc(100dvh - var(--header-height));
+    height: calc(100vh - var(--header-height) - var(--mobile-nav-height));
+    height: calc(100dvh - var(--header-height) - var(--mobile-nav-height));
     min-height: 0;
+    padding-bottom: env(safe-area-inset-bottom);
   }
   
   .header-content {
@@ -1342,12 +1500,22 @@ img {
     display: none;
   }
   
+  /* 移动端显示底部导航 */
+  .mobile-nav {
+    display: flex;
+  }
+  
+  /* 移动端隐藏桌面工具栏大部分按钮 */
+  .toolbar {
+    display: none;
+  }
+  
   /* 移动端侧边栏覆盖 */
   .sidebar {
     position: fixed;
     left: 0;
     top: var(--header-height);
-    bottom: 0;
+    bottom: var(--mobile-nav-height);
     height: auto;
     z-index: 100;
     box-shadow: var(--shadow-xl);
@@ -1372,7 +1540,7 @@ img {
   .stats-panel {
     gap: var(--space-4);
     padding: var(--space-2) var(--space-4);
-    bottom: var(--space-3);
+    bottom: calc(var(--space-3) + var(--mobile-nav-height));
   }
   
   .stat-value {
@@ -1384,25 +1552,32 @@ img {
     display: none;
   }
   
+  /* 节点信息卡避开底部导航 */
   .node-info-card {
     width: calc(100% - var(--space-8));
     left: var(--space-4);
     right: var(--space-4);
     top: auto;
-    bottom: calc(var(--space-4) + 60px);
-    max-height: 50vh;
+    bottom: calc(var(--space-4) + var(--mobile-nav-height) + env(safe-area-inset-bottom));
+    max-height: 45vh;
     overflow-y: auto;
   }
   
-  .toolbar {
-    flex-wrap: wrap;
-    max-width: calc(100% - var(--space-8));
-  }
-  
+  /* 面板全屏化 */
   .dashboard-panel,
   .ranking-panel {
     width: 100%;
     top: var(--header-height);
+    bottom: var(--mobile-nav-height);
+    height: auto;
+    max-height: none;
+    border-radius: 0;
+  }
+  
+  .dashboard-panel .dashboard-body,
+  .ranking-panel .ranking-content {
+    max-height: none;
+    height: calc(100% - 60px);
   }
   
   /* 小屏幕上不并排显示 */
@@ -1416,6 +1591,32 @@ img {
   
   .dashboard-charts {
     grid-template-columns: 1fr;
+  }
+  
+  /* 分享弹窗移动端居中 */
+  .share-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    min-width: 280px;
+  }
+  
+  .share-popup.hidden {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  
+  .share-popup:not(.hidden) {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  
+  /* 评论模态框移动端优化 */
+  .comments-modal-content {
+    width: 95%;
+    max-width: none;
+    max-height: 85vh;
+    margin-bottom: var(--mobile-nav-height);
   }
 }
 
@@ -1441,6 +1642,76 @@ img {
   
   .export-buttons {
     flex-direction: column;
+  }
+  
+  /* 小屏手机优化 */
+  .mobile-nav-item span {
+    font-size: 0.6rem;
+  }
+  
+  .mobile-nav-center {
+    width: 50px;
+    height: 50px;
+    margin-top: -15px;
+  }
+  
+  .mobile-more-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-1);
+    padding: var(--space-3);
+  }
+  
+  .mobile-more-item {
+    padding: var(--space-3);
+  }
+  
+  .mobile-more-item i {
+    font-size: 1.25rem;
+  }
+  
+  /* 节点信息卡更紧凑 */
+  .node-info-card {
+    max-height: 40vh;
+  }
+  
+  /* 面板标题更紧凑 */
+  .dashboard-header,
+  .ranking-header {
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .dashboard-header h3,
+  .ranking-header h3 {
+    font-size: 1rem;
+  }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+  /* 增大点击区域 */
+  .btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* 取消悬停效果，改用 active 状态 */
+  .btn:hover {
+    transform: none;
+  }
+  
+  .btn:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  
+  /* 搜索结果项更大的点击区域 */
+  .search-result-item {
+    padding: var(--space-4);
+  }
+  
+  /* 排行榜项目更大的点击区域 */
+  .ranking-item {
+    padding: var(--space-4);
   }
 }
 

@@ -736,12 +736,126 @@ class LoveGraphApp {
       this.handleKeyboard(e);
     });
     
+    // 移动端底部导航
+    this.bindMobileNav();
+    
     // 响应式处理
     window.addEventListener('resize', Utils.debounce(() => {
       if (window.innerWidth > 1024 && !AppState.sidebarOpen) {
         this.toggleSidebar(true);
       }
+      // 关闭移动端菜单当切换到桌面
+      if (window.innerWidth > 768) {
+        this.toggleMobileMore(false);
+      }
     }, 200));
+  }
+  
+  // 绑定移动端导航事件
+  bindMobileNav() {
+    // 底部导航按钮
+    document.getElementById('mobileToggleSidebar')?.addEventListener('click', () => {
+      this.toggleSidebar();
+      this.updateMobileNavActive('sidebar');
+    });
+    
+    document.getElementById('mobileDashboard')?.addEventListener('click', () => {
+      this.toggleDashboard();
+      this.updateMobileNavActive('dashboard');
+    });
+    
+    document.getElementById('mobileFitView')?.addEventListener('click', () => {
+      AppState.cy?.fit(undefined, 50);
+    });
+    
+    document.getElementById('mobileRanking')?.addEventListener('click', () => {
+      this.toggleRanking();
+      this.updateMobileNavActive('ranking');
+    });
+    
+    document.getElementById('mobileMore')?.addEventListener('click', () => {
+      this.toggleMobileMore(true);
+    });
+    
+    // 更多菜单
+    document.getElementById('closeMobileMore')?.addEventListener('click', () => {
+      this.toggleMobileMore(false);
+    });
+    
+    document.querySelector('.mobile-more-backdrop')?.addEventListener('click', () => {
+      this.toggleMobileMore(false);
+    });
+    
+    // 更多菜单项
+    document.querySelectorAll('.mobile-more-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const action = item.dataset.action;
+        this.handleMobileAction(action);
+        this.toggleMobileMore(false);
+      });
+    });
+  }
+  
+  // 处理移动端操作
+  handleMobileAction(action) {
+    switch (action) {
+      case 'comments':
+        this.toggleComments(true);
+        break;
+      case 'share':
+        this.toggleSharePopup(true);
+        break;
+      case 'zoomIn':
+        AppState.cy?.zoom(AppState.cy.zoom() * 1.3);
+        break;
+      case 'zoomOut':
+        AppState.cy?.zoom(AppState.cy.zoom() / 1.3);
+        break;
+      case 'reset':
+        this.resetView();
+        break;
+      case 'theme':
+        this.toggleTheme();
+        break;
+    }
+  }
+  
+  // 切换移动端更多菜单
+  toggleMobileMore(show) {
+    const menu = document.getElementById('mobileMoreMenu');
+    if (!menu) return;
+    
+    const shouldShow = show !== undefined ? show : menu.classList.contains('hidden');
+    
+    if (shouldShow) {
+      menu.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    } else {
+      menu.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+  }
+  
+  // 更新移动端导航激活状态
+  updateMobileNavActive(active) {
+    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    
+    if (active === 'sidebar' && AppState.sidebarOpen) {
+      document.getElementById('mobileToggleSidebar')?.classList.add('active');
+    }
+    
+    const dashboard = document.getElementById('dashboardPanel');
+    const ranking = document.getElementById('rankingPanel');
+    
+    if (active === 'dashboard' && dashboard && !dashboard.classList.contains('hidden')) {
+      document.getElementById('mobileDashboard')?.classList.add('active');
+    }
+    
+    if (active === 'ranking' && ranking && !ranking.classList.contains('hidden')) {
+      document.getElementById('mobileRanking')?.classList.add('active');
+    }
   }
   
   // 切换主题
@@ -755,9 +869,16 @@ class LoveGraphApp {
     document.documentElement.setAttribute('data-theme', AppState.theme);
     localStorage.setItem('theme', AppState.theme);
     
+    // 更新头部主题按钮图标
     const themeIcon = document.querySelector('#themeToggle i');
     if (themeIcon) {
       themeIcon.className = AppState.theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+    }
+    
+    // 更新移动端更多菜单中的主题图标
+    const mobileThemeIcon = document.querySelector('.mobile-more-item[data-action="theme"] i');
+    if (mobileThemeIcon) {
+      mobileThemeIcon.className = AppState.theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
     }
   }
   
@@ -779,6 +900,9 @@ class LoveGraphApp {
       overlay?.classList.add('hidden');
       document.body.style.overflow = '';
     }
+    
+    // 更新移动端导航状态
+    this.updateMobileNavActive('sidebar');
   }
   
   // 处理搜索
@@ -1074,6 +1198,8 @@ class LoveGraphApp {
     
     // 更新面板布局
     this.updatePanelLayout();
+    // 更新移动端导航状态
+    this.updateMobileNavActive('dashboard');
   }
   
   // 仪表盘内容动画
@@ -1226,6 +1352,8 @@ class LoveGraphApp {
     
     // 更新面板布局
     this.updatePanelLayout();
+    // 更新移动端导航状态
+    this.updateMobileNavActive('ranking');
   }
   
   // 切换评论区

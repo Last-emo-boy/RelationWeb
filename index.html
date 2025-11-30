@@ -551,6 +551,68 @@
     <span>离线模式</span>
   </div>
 
+  <!-- 移动端底部导航栏 -->
+  <nav class="mobile-nav">
+    <button class="mobile-nav-item" id="mobileToggleSidebar" data-action="sidebar">
+      <i class="fas fa-sliders-h"></i>
+      <span>控制</span>
+    </button>
+    <button class="mobile-nav-item" id="mobileDashboard" data-action="dashboard">
+      <i class="fas fa-chart-pie"></i>
+      <span>仪表盘</span>
+    </button>
+    <button class="mobile-nav-item mobile-nav-center" id="mobileFitView" data-action="fit">
+      <i class="fas fa-crosshairs"></i>
+    </button>
+    <button class="mobile-nav-item" id="mobileRanking" data-action="ranking">
+      <i class="fas fa-trophy"></i>
+      <span>排行</span>
+    </button>
+    <button class="mobile-nav-item" id="mobileMore" data-action="more">
+      <i class="fas fa-ellipsis-h"></i>
+      <span>更多</span>
+    </button>
+  </nav>
+
+  <!-- 移动端更多菜单 -->
+  <div id="mobileMoreMenu" class="mobile-more-menu hidden">
+    <div class="mobile-more-backdrop"></div>
+    <div class="mobile-more-content">
+      <div class="mobile-more-header">
+        <span>更多功能</span>
+        <button class="close-btn" id="closeMobileMore">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="mobile-more-grid">
+        <button class="mobile-more-item" data-action="comments">
+          <i class="fas fa-comments"></i>
+          <span>评论区</span>
+        </button>
+        <button class="mobile-more-item" data-action="share">
+          <i class="fas fa-share-alt"></i>
+          <span>分享</span>
+        </button>
+        <button class="mobile-more-item" data-action="zoomIn">
+          <i class="fas fa-search-plus"></i>
+          <span>放大</span>
+        </button>
+        <button class="mobile-more-item" data-action="zoomOut">
+          <i class="fas fa-search-minus"></i>
+          <span>缩小</span>
+        </button>
+        <button class="mobile-more-item" data-action="reset">
+          <i class="fas fa-undo"></i>
+          <span>重置</span>
+        </button>
+        <button class="mobile-more-item" data-action="theme">
+          <i class="fas fa-moon"></i>
+          <span>主题</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 脚本 -->
   <script src="data.js"></script>
   <script src="main.js"></script>
